@@ -1,6 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
-import DataTable from "react-data-table-component";
 import BreadCrumb from "../common/Breadcrumb";
 import Layout from "../layout";
 import { getStockOrdersFunction } from "../../Services/Apis";
@@ -8,10 +7,10 @@ import Loading from "../common/Loading";
 
 export default function CompleteOrders() {
   const [data, setData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
-  const categoryName = sessionStorage.getItem("role");
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 10;
+  const categoryName = useMemo(() => sessionStorage.getItem("role"), []);
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -44,66 +43,66 @@ export default function CompleteOrders() {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const lastIndex = currentPage * recordsPerPage;
+  const firstIndex = lastIndex - recordsPerPage;
+
+  const records = useMemo(
+    () => data.slice(firstIndex, lastIndex),
+    [data, firstIndex, lastIndex]
+  );
+  const npage = useMemo(() => Math.ceil(data.length / recordsPerPage), [data]);
+  const numbers = useMemo(() => [...Array(npage + 1).keys()].slice(1), [npage]);
+
   const columns = [
-    {
-      name: "ID",
-      selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
-      sortable: true,
-      width: "100px",
-    },
-    {
-      name: "Order Id",
-      selector: (row) => <p className="uppercase">{row._id}</p>,
-      sortable: true,
-    },
-    {
-      name: "Products",
-      selector: (row) => (
-        <div className="p-2 space-y-2 bg-white rounded-lg shadow-md">
-          {row.products.map((product) => (
-            <div
-              key={
-                product.productID?._id ||
-                product.productID?.inventoryProductName
-              }
-            >
-              {product.productID?.inventoryProductName} - {product.sendQuantity}{" "}
-              ({product.productID?.inventoryProductUnit?.inventoryUnitName})
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      name: "Sent To",
-      cell: (row) => <p>{row.sentTo}</p>,
-      sortable: true,
-    },
-    {
-      name: "Order Status",
-      cell: (row) => <p>{row.orderStatus}</p>,
-      sortable: true,
-    },
-    {
-      name: "Completion Time",
-      selector: (row) => <p>{formatDate(row.updatedAt)}</p>,
-      sortable: true,
-    },
-    {
-      name: "Actions",
-      cell: (row) => (
-        <div className="flex justify-center p-1 space-x-2">
+    { name: "ID", width: "100px" },
+    { name: "Order Id", width: "auto" },
+    { name: "Products", width: "auto" },
+    { name: "Sent To", width: "auto" },
+    { name: "Order Status", width: "auto" },
+    { name: "Completion Time", width: "auto" },
+    { name: "Actions", width: "200px" },
+  ];
+
+  const renderTableRows = () =>
+    records.map((row, index) => (
+      <tr
+        key={row._id}
+        className="border-b border-gray-300 dark:border-slate-700"
+      >
+        <td className="px-4 py-3 w-10">
+          {(currentPage - 1) * recordsPerPage + index + 1}
+        </td>
+        <td className="px-4 py-3 uppercase font-medium text-gray-900 dark:text-white whitespace-nowrap w-28">
+          {row._id}
+        </td>
+        <td className="md:px-4 py-3 w-48">
+          <div className="p-2 space-y-2 bg-white rounded-lg shadow-md">
+            {row.products.map((product) => (
+              <div
+                key={
+                  product.productID?._id ||
+                  product.productID?.inventoryProductName
+                }
+              >
+                {product.productID?.inventoryProductName} -{" "}
+                {product.sendQuantity} (
+                {product.productID?.inventoryProductUnit?.inventoryUnitName})
+              </div>
+            ))}
+          </div>
+        </td>
+        <td className="px-4 py-3 w-20">{row.sentTo}</td>
+        <td className="px-4 py-3 w-20">{row.orderStatus}</td>
+        <td className="px-4 py-3">{formatDate(row.updatedAt)}</td>
+        <td className="px-4 py-3 lg:flex grid lg:space-x-5 lg:space-y-0 space-y-5 w-fit justify-center lg:mt-5">
           <Link to={`/view-order/${row._id}`}>
             <small className="px-2 bg-blue-100 border border-blue-600 rounded-sm hover:bg-blue-200 cursor-pointer">
               View
             </small>
           </Link>
-        </div>
-      ),
-      sortable: true,
-      width: "200px",
-    },
-  ];
+        </td>
+      </tr>
+    ));
 
   return (
     <Layout>
@@ -113,25 +112,70 @@ export default function CompleteOrders() {
         <div className="container px-4 mx-auto mt-4 md:px-8">
           <BreadCrumb pageName="Completed Orders" />
           <div className="p-4 bg-white rounded-lg shadow-md">
-            <DataTable
-              columns={columns}
-              data={data}
-              pagination
-              paginationPerPage={rowsPerPage}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              paginationComponentOptions={{
-                rowsPerPageText: "Rows per page:",
-                rangeSeparatorText: "of",
-                selectAllRowsItem: true,
-                selectAllRowsItemText: "All",
-              }}
-              onChangePage={setCurrentPage}
-              onChangeRowsPerPage={setRowsPerPage}
-              noHeader
-              responsive
-              className="text-base"
-              theme="solarized"
-            />
+            {data.length === 0 ? (
+              <h1>No Data Found</h1>
+            ) : (
+              <>
+                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-white dark:duration-700">
+                    <tr className="border-b border-gray-300 dark:border-gray-500">
+                      {columns.map((col, i) => (
+                        <th
+                          key={i}
+                          scope="col"
+                          className="px-4 py-3"
+                          style={{ width: col.width }}
+                        >
+                          {col.name}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>{renderTableRows()}</tbody>
+                </table>
+
+                <nav>
+                  <ul className="flex justify-center space-x-2 my-4">
+                    <li>
+                      <button
+                        onClick={() =>
+                          setCurrentPage((prev) => Math.max(prev - 1, 1))
+                        }
+                        className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+                        disabled={currentPage === 1}
+                      >
+                        Prev
+                      </button>
+                    </li>
+                    {numbers.map((n) => (
+                      <li key={n}>
+                        <button
+                          onClick={() => setCurrentPage(n)}
+                          className={`px-4 py-2 rounded-md transition ${
+                            currentPage === n
+                              ? "bg-blue-500 text-white"
+                              : "bg-gray-200 hover:bg-gray-300"
+                          }`}
+                        >
+                          {n}
+                        </button>
+                      </li>
+                    ))}
+                    <li>
+                      <button
+                        onClick={() =>
+                          setCurrentPage((prev) => Math.min(prev + 1, npage))
+                        }
+                        className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+                        disabled={currentPage === npage}
+                      >
+                        Next
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+              </>
+            )}
           </div>
         </div>
       )}

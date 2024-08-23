@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import DataTable from "react-data-table-component";
+import { useEffect, useMemo, useState } from "react";
 import BreadCrumb from "../../common/Breadcrumb";
 import Layout from "../../layout";
 import { getProductsFunction } from "../../../Services/Apis";
@@ -7,226 +6,150 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../common/Loading";
 import SendStock from "./SendStock";
+import PropTypes from "prop-types";
+
+const Pagination = ({ currentPage, totalPages, onPageChange }) => (
+  <nav>
+    <ul className="flex justify-center space-x-2 my-4">
+      <li
+        className={`${
+          currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+        }`}
+      >
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition disabled:hover:bg-gray-200"
+          disabled={currentPage === 1}
+        >
+          Prev
+        </button>
+      </li>
+      {[...Array(totalPages)].map((_, n) => (
+        <li key={n + 1}>
+          <button
+            onClick={() => onPageChange(n + 1)}
+            className={`px-4 py-2 rounded-md transition ${
+              currentPage === n + 1
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 hover:bg-gray-300"
+            }`}
+          >
+            {n + 1}
+          </button>
+        </li>
+      ))}
+      <li
+        className={`${
+          currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+        }`}
+      >
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition disabled:hover:bg-gray-200"
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </li>
+    </ul>
+  </nav>
+);
+
+Pagination.propTypes = {
+  currentPage: PropTypes.string.isRequired,
+  totalPages: PropTypes.string.isRequired,
+  onPageChange: PropTypes.string.isRequired,
+};
 
 export default function OutStock() {
   const [data, setData] = useState([]);
+  const [quantity, setQuantity] = useState("");
+  const [editingRowId, setEditingRowId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [quantity, setQuantity] = useState("");
-  const [productId, setProductId] = useState(null);
-  const [editingRowId, setEditingRowId] = useState(null);
+  const [productId, setProductId] = useState("");
   const categoryName = sessionStorage.getItem("role");
 
-  const notifySuccess = (toastMessage) => {
+  const recordsPerPage = 10;
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const response = await getProductsFunction(categoryName);
+        if (response.status === 200) {
+          setData(response?.data?.products);
+        }
+      } catch (error) {
+        console.error("Error fetching Products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [categoryName]);
+
+  const records = useMemo(() => {
+    const lastIndex = currentPage * recordsPerPage;
+    const firstIndex = lastIndex - recordsPerPage;
+    return data.slice(firstIndex, lastIndex);
+  }, [data, currentPage]);
+
+  const totalPages = useMemo(
+    () => Math.ceil(data.length / recordsPerPage),
+    [data.length]
+  );
+
+  const notifySuccess = (toastMessage) =>
     toast.success(toastMessage, {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 2000,
     });
-  };
 
-  const notifyError = (errorMessage) => {
+  const notifyError = (errorMessage) =>
     toast.error(errorMessage, {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 3000,
     });
-  };
-
-  const fetchProducts = async () => {
-    setLoading(true);
-
-    try {
-      const response = await getProductsFunction(categoryName);
-
-      if (response.status === 200) {
-        setData(response?.data?.products);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error fetching Products:", error);
-      setLoading(false);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const paginationOptions = {
-    rowsPerPageText: "Rows per page:",
-    rangeSeparatorText: "of",
-    selectAllRowsItem: true,
-    selectAllRowsItemText: "All",
-  };
-
-  const columns = [
-    {
-      name: "ID",
-      selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
-      sortable: true,
-      width: "100px",
-    },
-    {
-      name: "Product Name",
-      selector: (rows) => (
-        <div className="flex items-center space-x-3">
-          <img
-            src={rows.inventoryProductImageUrl}
-            alt={rows.inventoryProductName}
-            className="w-20 h-20 p-1"
-          />
-          <p>{rows.inventoryProductName}</p>
-        </div>
-      ),
-      sortable: true,
-      width: "300px",
-    },
-    {
-      name: "SKU",
-      selector: (rows) => (
-        <p className="uppercase">{rows.inventoryProductSKUCode}</p>
-      ),
-      sortable: true,
-      width: "150px",
-    },
-    {
-      name: "Category",
-      selector: (rows) => <p className="uppercase">{rows.inventoryCategory}</p>,
-      width: "150px",
-    },
-    {
-      name: "Unit",
-      selector: (rows) => (
-        <p className="uppercase">
-          {rows?.inventoryProductUnit?.inventoryUnitName}
-        </p>
-      ),
-      sortable: true,
-      width: "150px",
-    },
-    {
-      name: "Current Quantity",
-      selector: (rows) => (
-        <p className="text-green-500">{`${rows.inventoryProductQuantity}`}</p>
-      ),
-      sortable: true,
-      width: "150px",
-    },
-    {
-      name: "Actions",
-      cell: (row) => (
-        <div>
-          {editingRowId === row._id ? (
-            <div className="mt-2 mb-2 space-y-2">
-              <input
-                type="number"
-                placeholder="Enter quantity"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                className="p-2 border"
-              />
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => handleAddStock(row)}
-                  className="p-2 text-white bg-black hover:bg-white hover:text-black hover:duration-500"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => handleCancelEdit()}
-                  className="p-2 text-white bg-red-500 hover:bg-white hover:text-red-500 hover:duration-500"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          ) : (
-            <button
-              onClick={() => {
-                setProductId(row._id);
-                setEditingRowId(row._id);
-              }}
-              className="p-2 text-center text-white bg-black hover:bg-white hover:text-black hover:duration-500 w-fit"
-            >
-              Out Stock
-            </button>
-          )}
-        </div>
-      ),
-      width: "200px",
-    },
-  ];
 
   const handleAddStock = (row) => {
-    const {
-      _id,
-      inventoryProductName,
-      inventoryProductQuantity,
-      inventoryProductUnit,
-    } = row;
-
     const enteredQuantity = parseFloat(quantity);
-
     if (!enteredQuantity || enteredQuantity < 0.1) {
       notifyError(
         "Please enter a valid quantity greater than or equal to 0.1."
       );
       return;
     }
-
-    if (productId === _id) {
-      if (enteredQuantity > inventoryProductQuantity) {
-        notifyError("Insufficient stock available.");
-        return;
-      }
-
-      if (isNaN(enteredQuantity)) {
-        notifyError("Please enter a valid quantity.");
-        return;
-      }
-
-      const roleData = sessionStorage.getItem("role");
-
-      const stockData = {
-        role: roleData,
-        quantity: enteredQuantity,
-        productId,
-        productName: inventoryProductName,
-        unit: inventoryProductUnit.inventoryUnitName,
-      };
-
-      let existingStock = JSON.parse(localStorage.getItem("stock")) || [];
-      const existingProductIndex = existingStock.findIndex(
-        (item) => item.productId === productId
-      );
-
-      if (existingProductIndex !== -1) {
-        existingStock[existingProductIndex].quantity = enteredQuantity;
-      } else {
-        existingStock.push(stockData);
-      }
-
-      localStorage.setItem("stock", JSON.stringify(existingStock));
-
-      setQuantity("");
-      setEditingRowId(null);
-
-      notifySuccess("Stock data saved successfully!");
-    } else {
-      notifyError("Please enter a valid quantity.");
+    if (enteredQuantity > row.inventoryProductQuantity) {
+      notifyError("Insufficient stock available.");
+      return;
     }
-  };
 
-  const handleCancelEdit = () => {
+    const stockData = {
+      role: categoryName,
+      quantity: enteredQuantity,
+      productId: row._id,
+      productName: row.inventoryProductName,
+      unit: row.inventoryProductUnit.inventoryUnitName,
+    };
+
+    let existingStock = JSON.parse(localStorage.getItem("stock")) || [];
+    const existingProductIndex = existingStock.findIndex(
+      (item) => item.productId === productId
+    );
+
+    if (existingProductIndex !== -1) {
+      existingStock[existingProductIndex].quantity = enteredQuantity;
+    } else {
+      existingStock.push(stockData);
+    }
+
+    localStorage.setItem("stock", JSON.stringify(existingStock));
+
     setQuantity("");
     setEditingRowId(null);
-  };
-
-  const handleSendStock = () => {
-    setModalVisible(true);
+    notifySuccess("Stock data saved successfully!");
   };
 
   const storedStock = JSON.parse(localStorage.getItem("stock"));
@@ -241,7 +164,11 @@ export default function OutStock() {
 
           <div className="border w-fit mb-7">
             <div
-              onClick={storedStock?.length > 0 ? handleSendStock : undefined}
+              onClick={
+                storedStock?.length > 0
+                  ? () => setModalVisible(true)
+                  : undefined
+              }
               style={{
                 cursor: storedStock?.length > 0 ? "pointer" : "not-allowed",
               }}
@@ -259,32 +186,113 @@ export default function OutStock() {
           </div>
 
           <div className="p-4 bg-white rounded-lg shadow-md">
-            <DataTable
-              columns={columns}
-              data={data}
-              pagination
-              paginationPerPage={10}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              paginationComponentOptions={paginationOptions}
-              onChangePage={(page) => setCurrentPage(page)}
-              onChangeRowsPerPage={(perPage) => setRowsPerPage(perPage)}
-              noHeader
-              responsive
-              className="text-base"
-              theme="solarized"
-            />
+            {data.length === 0 ? (
+              <div>
+                <h1>No Data Found</h1>
+              </div>
+            ) : (
+              <>
+                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-white dark:duration-700">
+                    <tr className="border-b border-gray-300 dark:border-gray-500">
+                      {[
+                        "ID",
+                        "Product Name",
+                        "SKU",
+                        "Unit",
+                        "Current Quantity",
+                        "Category",
+                        "Actions",
+                      ].map((col) => (
+                        <th key={col} scope="col" className="px-4 py-3">
+                          {col}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {records.map((value, index) => (
+                      <tr
+                        key={value._id}
+                        className="border-b border-gray-300 dark:border-slate-700"
+                      >
+                        <td className="px-4 py-3">
+                          {index + 1 + (currentPage - 1) * recordsPerPage}
+                        </td>
+                        <td className="flex items-center space-x-3 px-4 py-3 font-medium whitespace-nowrap">
+                          <img
+                            src={value.inventoryProductImageUrl}
+                            alt={value.name}
+                            className="p-1 w-8 h-8"
+                          />
+                          {value.inventoryProductName}
+                        </td>
+                        <td className="px-4 py-3">
+                          {value.inventoryProductSKUCode}
+                        </td>
+                        <td className="px-4 py-3">
+                          {value.inventoryProductUnit.inventoryUnitName}
+                        </td>
+                        <td className="px-4 py-3 text-green-500">
+                          {value.inventoryProductQuantity}
+                        </td>
+                        <td className="px-4 py-3">{value.inventoryCategory}</td>
+                        <td className="px-4 py-3">
+                          {editingRowId === value._id ? (
+                            <div className="mt-2 mb-2 space-y-2">
+                              <input
+                                type="number"
+                                placeholder="Enter quantity"
+                                value={quantity}
+                                onChange={(e) => setQuantity(e.target.value)}
+                                className="p-2 border"
+                              />
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => handleAddStock(value)}
+                                  className="p-2 text-white bg-black hover:bg-white hover:text-black hover:duration-500"
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={() => setEditingRowId(null)}
+                                  className="p-2 text-white bg-red-500 hover:bg-white hover:text-red-500 hover:duration-500"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setProductId(value._id);
+                                setEditingRowId(value._id);
+                              }}
+                              className="p-2 text-center text-white bg-black hover:bg-white hover:text-black hover:duration-500 w-fit"
+                            >
+                              Out Stock
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </>
+            )}
           </div>
-
-          {modalVisible && (
-            <SendStock
-              showModal={modalVisible}
-              setShowModal={setModalVisible}
-              fetchProducts={fetchProducts}
-            />
-          )}
-          <ToastContainer />
         </div>
       )}
+      <SendStock
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
+      <ToastContainer />
     </Layout>
   );
 }

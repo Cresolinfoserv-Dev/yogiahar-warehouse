@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import DataTable from "react-data-table-component";
+import { useEffect, useState, useMemo } from "react";
 import BreadCrumb from "../../common/Breadcrumb";
 import Layout from "../../layout";
 import { getProductsFunction } from "../../../Services/Apis";
@@ -9,27 +8,21 @@ import AddStockModel from "./AddStockModel";
 export default function InStock() {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [isGet, setIsGet] = useState(false);
   const [productId, setProductId] = useState("");
   const categoryName = sessionStorage.getItem("role");
-  console.log(data);
 
   const fetchProducts = async () => {
     setLoading(true);
-
     try {
       const response = await getProductsFunction(categoryName);
-
       if (response.status === 200) {
-        setData(response?.data?.products);
-        setLoading(false);
+        setData(response.data?.products || []);
       }
     } catch (error) {
       console.error("Error fetching Products:", error);
-      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -39,88 +32,33 @@ export default function InStock() {
     fetchProducts();
   }, []);
 
-  const paginationOptions = {
-    rowsPerPageText: "Rows per page:",
-    rangeSeparatorText: "of",
-    selectAllRowsItem: true,
-    selectAllRowsItemText: "All",
-  };
-
   const handleClick = (id) => {
     setProductId(id);
     setModalVisible(true);
-    setIsGet(true);
+  };
+
+  const npage = useMemo(
+    () => Math.ceil(data.length / rowsPerPage),
+    [data.length, rowsPerPage]
+  );
+  const records = useMemo(() => {
+    const lastIndex = currentPage * rowsPerPage;
+    const firstIndex = lastIndex - rowsPerPage;
+    return data.slice(firstIndex, lastIndex);
+  }, [data, currentPage, rowsPerPage]);
+
+  const changePage = (page) => {
+    if (page >= 1 && page <= npage) setCurrentPage(page);
   };
 
   const columns = [
-    {
-      name: "ID",
-      selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
-
-      width: "100px",
-    },
-    {
-      name: "Product Name",
-      selector: (rows) => (
-        <div className="flex items-center space-x-3">
-          <img
-            src={rows.inventoryProductImageUrl}
-            alt={rows.name}
-            className="p-1 w-24 h-24"
-          />
-          <p>{rows.inventoryProductName}</p>
-        </div>
-      ),
-
-      width: "300px",
-    },
-    {
-      name: "SKU",
-      selector: (rows) => (
-        <p className="uppercase">{rows.inventoryProductSKUCode}</p>
-      ),
-      width: "150px",
-    },
-    {
-      name: "Category",
-      selector: (rows) => <p className="uppercase">{rows.inventoryCategory}</p>,
-
-      width: "150px",
-    },
-    {
-      name: "Unit",
-      selector: (rows) => (
-        <p className="uppercase">
-          {rows?.inventoryProductUnit?.inventoryUnitName}
-        </p>
-      ),
-
-      width: "150px",
-    },
-    {
-      name: "Quantity",
-      selector: (rows) => (
-        <p className="text-green-500">{`${rows.inventoryProductQuantity}`}</p>
-      ),
-
-      width: "150px",
-    },
-    {
-      name: "Actions",
-      selector: (rows) => (
-        <div className="flex justify-center space-x-2">
-          <div className="border w-fit mb-7">
-            <div onClick={() => handleClick(rows._id)}>
-              <h4 className="p-2 text-center text-white bg-black hover:bg-white hover:text-black hover:duration-500 w-fit">
-                Add Stock
-              </h4>
-            </div>
-          </div>
-        </div>
-      ),
-      sortable: true,
-      width: "200px",
-    },
+    { name: "ID", width: "100px" },
+    { name: "Product Name", width: "300px" },
+    { name: "SKU", width: "150px" },
+    { name: "Category", width: "150px" },
+    { name: "Unit", width: "150px" },
+    { name: "Quantity", width: "150px" },
+    { name: "Actions", width: "200px" },
   ];
 
   return (
@@ -130,25 +68,108 @@ export default function InStock() {
       ) : (
         <div className="container px-4 mx-auto mt-4 md:px-8">
           <BreadCrumb pageName="In Stock" />
-
           <div className="p-4 bg-white rounded-lg shadow-md">
-            <DataTable
-              columns={columns}
-              data={data}
-              pagination
-              paginationPerPage={10}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              paginationComponentOptions={paginationOptions}
-              onChangePage={(page) => setCurrentPage(page)}
-              onChangeRowsPerPage={(perPage) => setRowsPerPage(perPage)}
-              noHeader
-              responsive
-              className="text-base"
-              theme="solarized"
-            />
+            {data.length === 0 ? (
+              <div>
+                <h1>No Data Found</h1>
+              </div>
+            ) : (
+              <>
+                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-white dark:duration-700">
+                    <tr className="border-b border-gray-300 dark:border-gray-500">
+                      {columns.map((col, i) => (
+                        <th
+                          key={i}
+                          scope="col"
+                          className="px-4 py-3"
+                          style={{ width: col.width }}
+                        >
+                          {col.name}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {records.map((value, index) => (
+                      <tr
+                        key={value._id}
+                        className="border-b border-gray-300 dark:border-slate-700"
+                      >
+                        <td className="px-4 py-3">
+                          {index + 1 + (currentPage - 1) * rowsPerPage}
+                        </td>
+                        <td className="flex items-center space-x-3 px-4 py-3 font-medium whitespace-nowrap">
+                          <img
+                            src={value.inventoryProductImageUrl}
+                            alt={value.name}
+                            className="p-1 w-8 h-8"
+                          />
+                          {value.inventoryProductName}
+                        </td>
+                        <td className="px-4 py-3">
+                          {value.inventoryProductSKUCode}
+                        </td>
+                        <td className="px-4 py-3">{value.inventoryCategory}</td>
+                        <td className="px-4 py-3">
+                          {value.inventoryProductUnit?.inventoryUnitName}
+                        </td>
+                        <td className="px-4 py-3 text-green-500">
+                          {value.inventoryProductQuantity}
+                        </td>
+                        <td className="px-4 py-3">
+                          <button
+                            onClick={() => handleClick(value._id)}
+                            className="px-4 py-2 font-medium text-white bg-green-600 rounded-md shadow-md hover:bg-blue-700 transition"
+                          >
+                            Add Stock
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <nav className="flex justify-center space-x-2 my-4">
+                  <button
+                    onClick={() => changePage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition ${
+                      currentPage === 1 ? "cursor-not-allowed opacity-50" : ""
+                    }`}
+                  >
+                    Prev
+                  </button>
+                  {Array.from({ length: npage }, (_, i) => i + 1).map(
+                    (page) => (
+                      <button
+                        key={page}
+                        onClick={() => changePage(page)}
+                        className={`px-4 py-2 rounded-md transition ${
+                          currentPage === page
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-200 hover:bg-gray-300"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  )}
+                  <button
+                    onClick={() => changePage(currentPage + 1)}
+                    disabled={currentPage === npage}
+                    className={`px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition ${
+                      currentPage === npage
+                        ? "cursor-not-allowed opacity-50"
+                        : ""
+                    }`}
+                  >
+                    Next
+                  </button>
+                </nav>
+              </>
+            )}
           </div>
-
-          {isGet && (
+          {modalVisible && (
             <AddStockModel
               productId={productId}
               showModal={modalVisible}
