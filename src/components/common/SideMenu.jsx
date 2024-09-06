@@ -18,6 +18,13 @@ const data = [
   },
   {
     id: 2,
+    title: "Categories",
+    icon: <FaBusinessTime />,
+    route: "/get-categories",
+    dropItems: false,
+  },
+  {
+    id: 2,
     title: "Products",
     icon: <FaBusinessTime />,
     route: "#",

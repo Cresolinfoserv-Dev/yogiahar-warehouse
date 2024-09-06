@@ -16,6 +16,9 @@ import AddQuantity from "./components/Quantity/AddQuantity";
 import ViewOrderDetails from "./components/Orders/ViewOrderDetails";
 import UpdateQuantity from "./components/Quantity/UpdateQuantity";
 import ReturnStock from "./components/Stock/ReturnStock/ReturnStock";
+import GetCategories from "./components/Categories/GetCategories";
+import AddCategory from "./components/Categories/AddCategory";
+import EditCategory from "./components/Categories/EditCategory";
 
 function App() {
   return (
@@ -25,6 +28,12 @@ function App() {
 
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Cards />} />
+
+          {/* categories */}
+
+          <Route path="/get-categories" element={<GetCategories />} />
+          <Route path="/add-categories" element={<AddCategory />} />
+          <Route path="/edit-categories/:id" element={<EditCategory />} />
 
           {/* Quantity */}
 

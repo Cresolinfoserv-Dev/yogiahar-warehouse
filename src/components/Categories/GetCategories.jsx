@@ -2,16 +2,16 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import BreadCrumb from "../common/Breadcrumb";
 import Layout from "../layout";
-import {
-  getProductsFunction,
-  productUpdateStatusFunction,
-} from "../../Services/Apis";
 import Loading from "../common/Loading";
+import {
+  categoryUpdateStatusFunction,
+  getCategoryFunction,
+} from "../../Services/Apis";
 import ToggleButton from "react-toggle-button";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function GetProducts() {
+export default function GetCategories() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,12 +48,15 @@ export default function GetProducts() {
     });
   };
 
-  const fetchProducts = useCallback(async () => {
+  console.log(data);
+
+  const fetchCategories = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await getProductsFunction(categoryName);
+      const response = await getCategoryFunction(categoryName);
+
       if (response.status === 200) {
-        setData(response?.data?.products || []);
+        setData(response.data.categories || []);
       }
     } catch (error) {
       console.error("Error fetching Products:", error);
@@ -63,8 +66,8 @@ export default function GetProducts() {
   }, [categoryName]);
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    fetchCategories();
+  }, [fetchCategories]);
 
   const handlePrevPage = useCallback(() => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -81,11 +84,8 @@ export default function GetProducts() {
   const columns = useMemo(
     () => [
       { name: "ID", width: "100px" },
-      { name: "Product Name", width: "300px" },
-      { name: "SKU", width: "150px" },
-      { name: "Unit", width: "150px" },
-      { name: "Quantity", width: "150px" },
-      { name: "Category", width: "150px" },
+      { name: "Category Name", width: "300px" },
+      { name: "Category Image", width: "150px" },
       { name: "Status", width: "150px" },
       {
         name: "Actions",
@@ -101,24 +101,22 @@ export default function GetProducts() {
     const newStatus = status === "Active" ? "Inactive" : "Active";
 
     try {
-      const response = await productUpdateStatusFunction(
+      const response = await categoryUpdateStatusFunction(
         id,
         { newStatus },
         headers
       );
       if (response.status === 200) {
-        notifySuccess("Product Status Changed!");
-        fetchProducts();
+        notifySuccess("Category Status Changed!");
+        fetchCategories();
       }
     } catch (error) {
       notifyError(error);
-      console.error("Error updating product status:", error);
+      console.error("Error updating Category status:", error);
     }
   };
 
   const isStatusActive = (status) => status === "Active";
-
-  console.log(data);
 
   return (
     <Layout>
@@ -126,11 +124,11 @@ export default function GetProducts() {
         <Loading />
       ) : (
         <div className="container px-4 mx-auto md:px-8">
-          <BreadCrumb pageName="Products" />
+          <BreadCrumb pageName="Categories" />
           <div className="border w-fit mb-7">
-            <Link to="/product/add">
+            <Link to="/add-categories">
               <h4 className="p-2 text-center text-white bg-black hover:bg-white hover:text-black transition duration-500">
-                Add New Product
+                Add New Category
               </h4>
             </Link>
           </div>
@@ -150,45 +148,40 @@ export default function GetProducts() {
                     </tr>
                   </thead>
                   <tbody>
-                    {records?.map((product, index) => (
-                      <tr key={product._id} className="border-b">
+                    {records?.map((category, index) => (
+                      <tr key={category._id} className="border-b">
                         <td className="px-4 py-3">{index + 1 + firstIndex}</td>
                         <td className="px-4 py-3 font-medium">
-                          {product?.inventoryProductName}
+                          {category?.inventoryCategoryName}
                         </td>
                         <td className="px-4 py-3">
-                          {product?.inventoryProductSKUCode}
-                        </td>
-                        <td className="px-4 py-3">
-                          {product?.inventoryProductUnit?.inventoryUnitName}
-                        </td>
-                        <td className="px-4 py-3">
-                          {product?.inventoryProductQuantity}
-                        </td>
-                        <td className="px-4 py-3">
-                          {product?.inventoryCategory?.inventoryCategoryName}
+                          <img
+                            src={category?.inventoryCategoryImageUrl}
+                            alt=""
+                            className="size-24"
+                          />
                         </td>
                         <td className="px-4 py-3">
                           <ToggleButton
                             value={isStatusActive(
-                              product.inventoryProductStatus
+                              category.inventoryCategoryStatus
                             )}
                             onToggle={() =>
                               handleToggleStatus(
-                                product._id,
-                                product.inventoryProductStatus
+                                category._id,
+                                category.inventoryCategoryStatus
                               )
                             }
                           />
                         </td>
                         <td className="px-4 py-3">
-                          <div className="flex justify-center p-1 space-x-2">
-                            <Link to={`/product/update/${product._id}`}>
+                          <div className="grid gap-2">
+                            <Link to={`/edit-categories/${category._id}`}>
                               <small className="px-2 bg-green-100 border border-green-600 rounded-sm hover:bg-green-200">
                                 Edit
                               </small>
                             </Link>
-                            <Link to={`/product/view/${product._id}`}>
+                            <Link to={`/product/view/${category._id}`}>
                               <small className="px-2 bg-blue-100 border border-blue-600 rounded-sm hover:bg-blue-200">
                                 View
                               </small>
@@ -241,6 +234,7 @@ export default function GetProducts() {
           </div>
         </div>
       )}
+
       <ToastContainer />
     </Layout>
   );

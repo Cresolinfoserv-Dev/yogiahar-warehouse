@@ -1,9 +1,13 @@
 import { useForm } from "react-hook-form";
 import BreadCrumb from "../common/Breadcrumb";
 import Layout from "../layout";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createProductsFunction, getUnitsFunction } from "../../Services/Apis";
+import {
+  createProductsFunction,
+  getCategoryFunction,
+  getUnitsFunction,
+} from "../../Services/Apis";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import BackButton from "../common/BackButton";
@@ -15,13 +19,12 @@ export default function AddProducts() {
   const [errorMessage, setErrorMessage] = useState("");
   const authToken = sessionStorage.getItem("adminToken");
   const role = sessionStorage.getItem("role");
+  const [category, setCategory] = useState([]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    watch,
   } = useForm();
 
   const notifySuccess = () => {
@@ -55,25 +58,20 @@ export default function AddProducts() {
     }
   };
 
-  useEffect(() => {
-    fetchUnits();
-  }, []);
+  const fetchCategories = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await getCategoryFunction(role);
 
-  useEffect(() => {
-    if (role !== "Warehouse") {
-      setValue("inventoryCategory", role);
+      if (response.status === 200) {
+        setCategory(response.data.categories || []);
+      }
+    } catch (error) {
+      console.error("Error fetching Products:", error);
+    } finally {
+      setLoading(false);
     }
-  }, [role, setValue]);
-
-  const selectedCategory = watch("inventoryCategory");
-
-  useEffect(() => {
-    if (selectedCategory === "Cafe" || selectedCategory === "Restaurant") {
-      setValue("inventoryPrice", 0);
-    } else {
-      setValue("inventoryPrice", "");
-    }
-  }, [selectedCategory, setValue]);
+  }, [role]);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -86,8 +84,8 @@ export default function AddProducts() {
       data.inventoryProductDescription
     );
     formData.append("inventoryProductQuantity", data.inventoryProductQuantity);
-    if (data.inventoryPrice) {
-      formData.append("inventoryPrice", data.inventoryPrice);
+    if (data.inventorySellingPrice) {
+      formData.append("inventorySellingPrice", data.inventorySellingPrice);
     }
     if (data.inventoryCostPrice) {
       formData.append("inventoryCostPrice", data.inventoryCostPrice);
@@ -118,6 +116,11 @@ export default function AddProducts() {
     }
   };
 
+  useEffect(() => {
+    fetchUnits();
+    fetchCategories();
+  }, []);
+
   return (
     <Layout>
       <div className="px-2 mt-2 2xl:px-28 xl:px-16 md:mt-8">
@@ -139,15 +142,8 @@ export default function AddProducts() {
               type="file"
               name="InventoryProductFile"
               {...register("InventoryProductFile")}
-              className={`mt-1 p-2 border w-full ${
-                errors.InventoryProductFile ? "border-red-500" : ""
-              }`}
+              className={`mt-1 p-2 border w-full`}
             />
-            {errors.InventoryProductFile && (
-              <small className="text-red-500">
-                {errors.InventoryProductFile.message}
-              </small>
-            )}
           </div>
 
           <div className="mb-4">
@@ -161,7 +157,7 @@ export default function AddProducts() {
               type="text"
               name="inventoryProductName"
               {...register("inventoryProductName", {
-                required: "Name is required",
+                required: "Product Name is required",
                 maxLength: {
                   value: 30,
                   message: "Please enter 30 Characters",
@@ -196,11 +192,6 @@ export default function AddProducts() {
               {...register("inventoryProductDescription")}
               className="w-full p-2 mt-1 border"
             />
-            {errors.inventoryProductDescription && (
-              <small className="text-red-500">
-                {errors.inventoryProductDescription.message}
-              </small>
-            )}
           </div>
 
           <div className="mb-4">
@@ -227,19 +218,16 @@ export default function AddProducts() {
 
           <div className="mb-4">
             <label
-              htmlFor="inventoryPrice"
+              htmlFor="inventorySellingPrice"
               className="block text-sm font-medium text-gray-600"
             >
-              Product Price
+              Product Selling Price
             </label>
             <input
               type="number"
-              name="inventoryPrice"
-              {...register("inventoryPrice")}
+              name="inventorySellingPrice"
+              {...register("inventorySellingPrice")}
               className="w-full p-2 mt-1 border"
-              disabled={
-                selectedCategory === "Cafe" || selectedCategory === "Restaurant"
-              }
             />
           </div>
 
@@ -255,9 +243,6 @@ export default function AddProducts() {
               name="inventoryCostPrice"
               {...register("inventoryCostPrice")}
               className="w-full p-2 mt-1 border"
-              disabled={
-                selectedCategory === "Cafe" || selectedCategory === "Restaurant"
-              }
             />
           </div>
 
@@ -297,30 +282,21 @@ export default function AddProducts() {
             >
               Select Category
             </label>
-            {role === "Warehouse" ? (
-              <select
-                name="inventoryCategory"
-                id="inventoryCategory"
-                {...register("inventoryCategory", {
-                  required: "Category is required",
-                })}
-                className="w-full p-2 mt-1 border"
-              >
-                <option value="">Select an Option</option>
-                <option value="Restaurant">Restaurant</option>
-                <option value="Cafe">Cafe</option>
-                <option value="Boutique">Boutique</option>
-              </select>
-            ) : (
-              <input
-                type="text"
-                name="inventoryCategory"
-                value={role}
-                readOnly
-                className="w-full p-2 mt-1 border bg-gray-100"
-                {...register("inventoryCategory")}
-              />
-            )}
+            <select
+              name="inventoryCategory"
+              id="inventoryCategory"
+              {...register("inventoryCategory", {
+                required: "Product Category is required",
+              })}
+              className="w-full p-2 mt-1 border"
+            >
+              <option value="">Select an Option</option>
+              {category?.map((item) => (
+                <option key={item._id} value={item._id}>
+                  {item.inventoryCategoryName}
+                </option>
+              ))}
+            </select>
             {errors.inventoryCategory && (
               <small className="text-red-500">
                 {errors.inventoryCategory.message}

@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
+  getCategoryFunction,
   getUnitsFunction,
   productUpdateFunction,
   singleProductGetFunction,
@@ -21,19 +22,19 @@ export default function UpdateProduct() {
   const navigate = useNavigate();
   const authToken = sessionStorage.getItem("adminToken");
   const role = sessionStorage.getItem("role");
+  const [category, setCategory] = useState([]);
 
   const {
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
       inventoryProductName: "",
       inventoryProductDescription: "",
       inventoryProductQuantity: "",
-      inventoryPrice: "",
+      inventorySellingPrice: "",
       inventoryProductUnit: "",
       inventoryCategory: "",
     },
@@ -45,22 +46,6 @@ export default function UpdateProduct() {
       autoClose: 3000,
     });
   };
-
-  useEffect(() => {
-    if (role !== "Warehouse") {
-      setValue("inventoryCategory", role);
-    }
-  }, [role, setValue]);
-
-  const selectedCategory = watch("inventoryCategory");
-
-  useEffect(() => {
-    if (selectedCategory === "Cafe" || selectedCategory === "Restaurant") {
-      setValue("inventoryPrice", 0);
-    } else {
-      setValue("inventoryPrice", "");
-    }
-  }, [selectedCategory, setValue]);
 
   const handleImage = (e) => setUpdatedImages(e.target.files);
 
@@ -79,11 +64,15 @@ export default function UpdateProduct() {
   const fetchProduct = async () => {
     try {
       const { status, data } = await singleProductGetFunction(id);
+
+      console.log(data);
+
       if (status === 200) {
         const { product } = data;
         setProduct(product);
         Object.keys(product).forEach((key) => setValue(key, product[key]));
         setValue("inventoryProductUnit", product?.inventoryProductUnit?._id);
+        setValue("inventoryCategory", product?.inventoryCategory?._id);
       }
     } catch (error) {
       console.error("Error fetching product:", error);
@@ -91,9 +80,25 @@ export default function UpdateProduct() {
     }
   };
 
+  const fetchCategories = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await getCategoryFunction(role);
+
+      if (response.status === 200) {
+        setCategory(response.data.categories || []);
+      }
+    } catch (error) {
+      console.error("Error fetching Products:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [role]);
+
   useEffect(() => {
     fetchUnits();
     fetchProduct();
+    fetchCategories();
   }, [id]);
 
   const handleUpdateProduct = async (data) => {
@@ -216,18 +221,15 @@ export default function UpdateProduct() {
 
           <div className="mb-4">
             <label
-              htmlFor="inventoryPrice"
+              htmlFor="inventorySellingPrice"
               className="block text-sm font-medium text-gray-600"
             >
-              Product Price
+              Product Selling Price
             </label>
             <input
               type="number"
-              {...register("inventoryPrice")}
+              {...register("inventorySellingPrice")}
               className="w-full p-2 mt-1 border"
-              disabled={
-                selectedCategory === "Cafe" || selectedCategory === "Restaurant"
-              }
             />
           </div>
 
@@ -242,9 +244,6 @@ export default function UpdateProduct() {
               type="number"
               {...register("inventoryCostPrice")}
               className="w-full p-2 mt-1 border"
-              disabled={
-                selectedCategory === "Cafe" || selectedCategory === "Restaurant"
-              }
             />
           </div>
 
@@ -275,35 +274,32 @@ export default function UpdateProduct() {
             )}
           </div>
 
-          {role === "Warehouse" ? (
+          <div className="w-1/2 col-span-2 mb-4">
+            <label
+              htmlFor="inventoryCategory"
+              className="block text-sm font-medium text-gray-600"
+            >
+              Select Category
+            </label>
             <select
-              name="inventoryCategory"
-              id="inventoryCategory"
               {...register("inventoryCategory", {
-                required: "Category is required",
+                required: "Product Category is required",
               })}
               className="w-full p-2 mt-1 border"
             >
               <option value="">Select an Option</option>
-              <option value="Restaurant">Restaurant</option>
-              <option value="Cafe">Cafe</option>
-              <option value="Boutique">Boutique</option>
+              {category?.map((item) => (
+                <option key={item._id} value={item._id}>
+                  {item.inventoryCategoryName}
+                </option>
+              ))}
             </select>
-          ) : (
-            <input
-              type="text"
-              name="inventoryCategory"
-              value={role}
-              readOnly
-              className="w-full p-2 mt-1 border bg-gray-100"
-              {...register("inventoryCategory")}
-            />
-          )}
-          {errors.inventoryCategory && (
-            <small className="text-red-500">
-              {errors.inventoryCategory.message}
-            </small>
-          )}
+            {errors.inventoryCategory && (
+              <small className="text-red-500">
+                {errors.inventoryCategory.message}
+              </small>
+            )}
+          </div>
 
           <div className="col-span-2 w-1/2 mb-4">
             <label className="block text-sm font-medium text-gray-600">

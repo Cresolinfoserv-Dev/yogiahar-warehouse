@@ -7,6 +7,56 @@ export const adminLoginFunction = async (data, header) => {
   return await commonRequest("POST", `${BASE_URL}/login`, data, header);
 };
 
+//get category
+export const getCategoryFunction = async (categoryName) => {
+  return await commonRequest(
+    "GET",
+    `${BASE_URL}/inventory/category/filter/${categoryName}`
+  );
+};
+// Create Category Function
+
+export const createCategoryFunction = async (data, header) => {
+  return await commonRequest(
+    "POST",
+    `${BASE_URL}/inventory/category/create`,
+    data,
+    header
+  );
+};
+
+// Update category Function
+
+export const categoryUpdateFunction = async (id, data, header) => {
+  return await commonRequest(
+    "PUT",
+    `${BASE_URL}/inventory/category/update/${id}`,
+    data,
+    header
+  );
+};
+
+// Get Single category Function
+
+export const singleCategoryGetFunction = async (id) => {
+  return await commonRequest(
+    "GET",
+    `${BASE_URL}/inventory/category/get/${id}`,
+    ""
+  );
+};
+
+// Update Category Status Function
+
+export const categoryUpdateStatusFunction = async (id, data, header) => {
+  return await commonRequest(
+    "PUT",
+    `${BASE_URL}/inventory/category/status/${id}`,
+    data,
+    header
+  );
+};
+
 // Create Products Function
 
 export const createProductsFunction = async (data, header) => {
@@ -43,6 +93,17 @@ export const productUpdateFunction = async (id, data, header) => {
   return await commonRequest(
     "PUT",
     `${BASE_URL}/inventory/product/update/${id}`,
+    data,
+    header
+  );
+};
+
+// Update product Status Function
+
+export const productUpdateStatusFunction = async (id, data, header) => {
+  return await commonRequest(
+    "PUT",
+    `${BASE_URL}/inventory/product/status/${id}`,
     data,
     header
   );
