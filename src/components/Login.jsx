@@ -44,16 +44,6 @@ const Login = () => {
       if (
         response.status === 200 &&
         response.data.result.validateUser.role === "Warehouse" &&
-        response.data.result.validateUser.subRole === "WarehouseManager"
-      ) {
-        setLoading(true);
-        notifySuccess();
-        sessionStorage.setItem("adminToken", response.data.result.token);
-        sessionStorage.setItem("role", "Warehouse");
-        navigate("/dashboard");
-      } else if (
-        response.status === 200 &&
-        response.data.result.validateUser.role === "Warehouse" &&
         response.data.result.validateUser.subRole === "CafeWarehouse"
       ) {
         setLoading(true);
