@@ -1,9 +1,10 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import BreadCrumb from "../../common/Breadcrumb";
 import Layout from "../../layout";
 import { getProductsFunction } from "../../../Services/Apis";
 import Loading from "../../common/Loading";
 import AddStockModel from "./AddStockModel";
+import GetStockModel from "./GetStockModel";
 
 export default function InStock() {
   const [data, setData] = useState([]);
@@ -11,30 +12,36 @@ export default function InStock() {
   const [rowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisibleGetStock, setModalVisibleGetStock] = useState(false);
   const [productId, setProductId] = useState("");
   const categoryName = sessionStorage.getItem("role");
+  const [stock, setStock] = useState([]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
       const response = await getProductsFunction(categoryName);
       if (response.status === 200) {
-        setData(response.data?.products || []);
+        setData(response?.data?.products || []);
       }
     } catch (error) {
       console.error("Error fetching Products:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [categoryName]);
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [fetchProducts]);
 
   const handleClick = (id) => {
     setProductId(id);
     setModalVisible(true);
+  };
+
+  const handleClickGetStock = () => {
+    setModalVisibleGetStock(true);
   };
 
   const npage = useMemo(
@@ -61,6 +68,13 @@ export default function InStock() {
     { name: "Actions", width: "200px" },
   ];
 
+  useEffect(() => {
+    const storedStock = localStorage.getItem("stockData");
+    if (storedStock) {
+      setStock(JSON.parse(storedStock));
+    }
+  }, []);
+
   return (
     <Layout>
       {loading ? (
@@ -68,6 +82,25 @@ export default function InStock() {
       ) : (
         <div className="container px-4 mx-auto mt-4 md:px-8">
           <BreadCrumb pageName="In Stock" />
+
+          <div className="border w-fit mb-7">
+            <button
+              onClick={() => handleClickGetStock()}
+              style={{
+                cursor: stock?.product?.length > 0 ? "pointer" : "not-allowed",
+              }}
+            >
+              <h4
+                className={
+                  stock?.product?.length > 0
+                    ? "p-2 text-center text-white bg-black hover:bg-white hover:text-black hover:duration-500 w-fit"
+                    : "p-2 text-center text-gray-400 bg-gray-200 cursor-not-allowed w-fit"
+                }
+              >
+                Send Stock
+              </h4>
+            </button>
+          </div>
           <div className="p-4 bg-white rounded-lg shadow-md">
             {data.length === 0 ? (
               <div>
@@ -110,7 +143,9 @@ export default function InStock() {
                         <td className="px-4 py-3">
                           {value.inventoryProductSKUCode}
                         </td>
-                        <td className="px-4 py-3">{value.inventoryCategory}</td>
+                        <td className="px-4 py-3">
+                          {value.inventoryCategory?.inventoryCategoryName}
+                        </td>
                         <td className="px-4 py-3">
                           {value.inventoryProductUnit?.inventoryUnitName}
                         </td>
@@ -175,6 +210,13 @@ export default function InStock() {
               showModal={modalVisible}
               setShowModal={setModalVisible}
               fetchProducts={fetchProducts}
+            />
+          )}
+
+          {modalVisibleGetStock && (
+            <GetStockModel
+              showModal={modalVisibleGetStock}
+              setShowModal={setModalVisibleGetStock}
             />
           )}
         </div>

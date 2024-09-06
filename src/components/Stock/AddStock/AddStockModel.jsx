@@ -1,10 +1,9 @@
 import PropTypes from "prop-types";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { createStock, singleProductGetFunction } from "../../../Services/Apis";
+import { singleProductGetFunction } from "../../../Services/Apis";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
 
 export default function AddStockModel({
   showModal,
@@ -19,9 +18,8 @@ export default function AddStockModel({
     reset,
   } = useForm();
 
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const authToken = sessionStorage.getItem("adminToken");
+
   const [product, setProduct] = useState(null);
 
   const notifySuccess = (toastMessage) => {
@@ -53,26 +51,41 @@ export default function AddStockModel({
   }, [productId]);
 
   const onSubmit = async (data) => {
-    setLoading(true);
-
-    const headers = {
-      Authorization: `${authToken}`,
-    };
-
     try {
-      const response = await createStock(data, headers);
+      const existingStockData = JSON.parse(
+        localStorage.getItem("stockData")
+      ) || {
+        product: [],
+      };
 
-      if (response.status === 200) {
-        notifySuccess("Stock added successfully!");
-        setShowModal(false);
-        fetchProducts();
-        setLoading(false);
-        navigate("/in-stock");
+      const productIndex = existingStockData.product.findIndex(
+        (item) => item.productId === productId
+      );
+
+      if (productIndex !== -1) {
+        existingStockData.product[productIndex].quantity =
+          data.inventoryProductQuantity;
+        existingStockData.product[productIndex].productName =
+          product.inventoryProductName;
+      } else {
+        existingStockData.product.push({
+          productId: productId,
+          productName: product.inventoryProductName,
+          quantity: data.inventoryProductQuantity,
+        });
       }
+
+      // Save updated stock data back to local storage
+      localStorage.setItem("stockData", JSON.stringify(existingStockData));
+
+      notifySuccess("Stock added successfully!");
+      setShowModal(false);
+      fetchProducts();
+      setLoading(false);
     } catch (error) {
       setLoading(false);
       notifyError("Failed to add stock.");
-      console.error("Product creation error:", error);
+      console.error("Stock saving error:", error);
     }
   };
 

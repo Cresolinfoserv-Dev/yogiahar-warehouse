@@ -73,22 +73,23 @@ export default function OutStock() {
 
   const recordsPerPage = 10;
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const response = await getProductsFunction(categoryName);
-        if (response.status === 200) {
-          setData(response?.data?.products);
-        }
-      } catch (error) {
-        console.error("Error fetching Products:", error);
-      } finally {
-        setLoading(false);
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const response = await getProductsFunction(categoryName);
+      if (response.status === 200) {
+        setData(response?.data?.products);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching Products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchProducts();
-  }, [categoryName]);
+  }, []);
 
   const records = useMemo(() => {
     const lastIndex = currentPage * recordsPerPage;
@@ -154,6 +155,10 @@ export default function OutStock() {
 
   const storedStock = JSON.parse(localStorage.getItem("stock"));
 
+  const handleClick = () => {
+    setModalVisible(true);
+  };
+
   return (
     <Layout>
       {loading ? (
@@ -163,12 +168,8 @@ export default function OutStock() {
           <BreadCrumb pageName="Out Stock" />
 
           <div className="border w-fit mb-7">
-            <div
-              onClick={
-                storedStock?.length > 0
-                  ? () => setModalVisible(true)
-                  : undefined
-              }
+            <button
+              onClick={() => handleClick()}
               style={{
                 cursor: storedStock?.length > 0 ? "pointer" : "not-allowed",
               }}
@@ -182,7 +183,7 @@ export default function OutStock() {
               >
                 Send Stock
               </h4>
-            </div>
+            </button>
           </div>
 
           <div className="p-4 bg-white rounded-lg shadow-md">
@@ -236,7 +237,9 @@ export default function OutStock() {
                         <td className="px-4 py-3 text-green-500">
                           {value.inventoryProductQuantity}
                         </td>
-                        <td className="px-4 py-3">{value.inventoryCategory}</td>
+                        <td className="px-4 py-3">
+                          {value.inventoryCategory?.inventoryCategoryName}
+                        </td>
                         <td className="px-4 py-3">
                           {editingRowId === value._id ? (
                             <div className="mt-2 mb-2 space-y-2">
@@ -288,10 +291,14 @@ export default function OutStock() {
           </div>
         </div>
       )}
-      <SendStock
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-      />
+
+      {modalVisible && (
+        <SendStock
+          showModal={modalVisible}
+          setShowModal={setModalVisible}
+          fetchProducts={fetchProducts}
+        />
+      )}
       <ToastContainer />
     </Layout>
   );
