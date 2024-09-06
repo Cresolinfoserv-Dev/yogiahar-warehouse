@@ -126,12 +126,15 @@
 // export default Dashboard;
 
 import Layout from "../layout";
+import GetStockOrders from "./GetStockOrders";
 
 const Cards = () => {
   return (
     <Layout>
       <div className="p-2">
         <h1>cards</h1>
+
+        <GetStockOrders />
       </div>
     </Layout>
   );

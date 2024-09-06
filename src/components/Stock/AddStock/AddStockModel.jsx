@@ -75,7 +75,6 @@ export default function AddStockModel({
         });
       }
 
-      // Save updated stock data back to local storage
       localStorage.setItem("stockData", JSON.stringify(existingStockData));
 
       notifySuccess("Stock added successfully!");

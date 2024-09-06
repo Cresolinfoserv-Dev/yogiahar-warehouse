@@ -133,7 +133,7 @@ export default function ReturnStock() {
     {
       name: "Current Quantity",
       selector: (row) => (
-        <p className="text-green-500">{row.inventoryProductQuantity}</p>
+        <p className="text-green-500">{row?.inventoryProductQuantity}</p>
       ),
       sortable: true,
       width: "150px",
@@ -255,9 +255,9 @@ export default function ReturnStock() {
                         key={row._id}
                         className="border-b border-gray-300 dark:border-slate-700"
                       >
-                        {columns.map((col, i) => (
+                        {columns?.map((col, i) => (
                           <td key={i} className="px-4 py-3 w-20">
-                            {col.selector(row, id)}
+                            {col?.selector(row, id)}
                           </td>
                         ))}
                       </tr>
