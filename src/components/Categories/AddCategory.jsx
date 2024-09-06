@@ -87,15 +87,8 @@ export default function AddCategory() {
               type="file"
               name="InventoryCategoryFile"
               {...register("InventoryCategoryFile")}
-              className={`mt-1 p-2 border w-full ${
-                errors.InventoryCategoryFile ? "border-red-500" : ""
-              }`}
+              className={`mt-1 p-2 border w-full`}
             />
-            {errors.InventoryCategoryFile && (
-              <small className="text-red-500">
-                {errors.InventoryCategoryFile.message}
-              </small>
-            )}
           </div>
 
           <div className="mb-4">
