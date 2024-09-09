@@ -118,8 +118,6 @@ export default function GetProducts() {
 
   const isStatusActive = (status) => status === "Active";
 
-  console.log(data);
-
   return (
     <Layout>
       {loading ? (
@@ -153,8 +151,13 @@ export default function GetProducts() {
                     {records?.map((product, index) => (
                       <tr key={product._id} className="border-b">
                         <td className="px-4 py-3">{index + 1 + firstIndex}</td>
-                        <td className="px-4 py-3 font-medium">
-                          {product?.inventoryProductName}
+                        <td className="flex items-center space-x-3 px-4 py-3 font-medium whitespace-nowrap">
+                          <img
+                            src={product.inventoryProductImageUrl}
+                            alt={product.inventoryProductName}
+                            className="p-1 w-8 h-8"
+                          />
+                          {product.inventoryProductName}
                         </td>
                         <td className="px-4 py-3">
                           {product?.inventoryProductSKUCode}

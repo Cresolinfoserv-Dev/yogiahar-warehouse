@@ -48,8 +48,6 @@ export default function GetCategories() {
     });
   };
 
-  console.log(data);
-
   const fetchCategories = useCallback(async () => {
     setLoading(true);
     try {
@@ -179,11 +177,6 @@ export default function GetCategories() {
                             <Link to={`/edit-categories/${category._id}`}>
                               <small className="px-2 bg-green-100 border border-green-600 rounded-sm hover:bg-green-200">
                                 Edit
-                              </small>
-                            </Link>
-                            <Link to={`/product/view/${category._id}`}>
-                              <small className="px-2 bg-blue-100 border border-blue-600 rounded-sm hover:bg-blue-200">
-                                View
                               </small>
                             </Link>
                           </div>

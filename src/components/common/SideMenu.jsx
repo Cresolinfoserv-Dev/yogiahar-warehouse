@@ -18,13 +18,6 @@ const data = [
   },
   {
     id: 2,
-    title: "Categories",
-    icon: <FaBusinessTime />,
-    route: "/get-categories",
-    dropItems: false,
-  },
-  {
-    id: 2,
     title: "Products",
     icon: <FaBusinessTime />,
     route: "#",
@@ -38,6 +31,13 @@ const data = [
       },
       {
         id: 2,
+        title: "Categories",
+        icon: <FaBusinessTime />,
+        route: "/get-categories",
+        dropItems: false,
+      },
+      {
+        id: 3,
         title: "Products",
         icon: <FaBusinessTime />,
         route: "/products",
@@ -136,7 +136,9 @@ export default function SideMenu() {
               className="text-white"
               style={{ display: isOpen ? "block" : "none" }}
             >
-              {`Yogi Ahar ${role}`}
+              {role === "Kitchen"
+                ? "Yogi Ahar Restaurant Warehouse"
+                : `Yogi Ahar ${role} Warehouse`}
             </h5>
           </div>
         </Link>

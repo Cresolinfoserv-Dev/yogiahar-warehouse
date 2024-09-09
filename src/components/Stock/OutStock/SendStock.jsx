@@ -47,6 +47,7 @@ const SendStock = ({ showModal, setShowModal, fetchProducts }) => {
       const response = await sendStockFunction({
         product: stockData,
         sentTo,
+        type: categoryName,
       });
 
       if (response.status === 200) {

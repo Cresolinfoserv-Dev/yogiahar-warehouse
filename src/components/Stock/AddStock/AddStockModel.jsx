@@ -17,9 +17,7 @@ export default function AddStockModel({
     formState: { errors },
     reset,
   } = useForm();
-
   const [loading, setLoading] = useState(false);
-
   const [product, setProduct] = useState(null);
 
   const notifySuccess = (toastMessage) => {

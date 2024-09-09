@@ -41,11 +41,9 @@ const ViewOrderDetails = () => {
           link={
             data?.orderStatus === "Processing"
               ? "processing-orders"
-              : data?.orderStatus === "Transit"
-              ? "in-transit-orders"
-              : data?.orderStatus === "Completed"
-              ? "completed-orders"
-              : "returned-orders"
+              : data?.orderStatus === "Returned"
+              ? "returned-orders"
+              : "completed-orders"
           }
         />
 

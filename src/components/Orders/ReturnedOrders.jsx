@@ -61,10 +61,6 @@ export default function ReturnedOrders() {
         width: "100px",
       },
       {
-        name: "Order Id",
-        selector: (row) => <p className="uppercase">{row._id}</p>,
-      },
-      {
         name: "Products",
         selector: (row) => (
           <div className="p-2 space-y-2 bg-white rounded-lg shadow-md">

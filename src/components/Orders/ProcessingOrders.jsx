@@ -4,7 +4,7 @@ import BreadCrumb from "../common/Breadcrumb";
 import Layout from "../layout";
 import {
   changeOrderStatusByID,
-  getStockOrdersFunction,
+  getStockOrdersFunction, 
 } from "../../Services/Apis";
 import Loading from "../common/Loading";
 import { ToastContainer, toast } from "react-toastify";
@@ -82,10 +82,6 @@ export default function ProcessingOrders() {
     {
       name: "ID",
       selector: (_, index) => (currentPage - 1) * recordsPerPage + index + 1,
-    },
-    {
-      name: "Order Id",
-      selector: (row) => <p className="uppercase">{row._id}</p>,
     },
     {
       name: "Products",

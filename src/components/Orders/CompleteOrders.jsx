@@ -55,7 +55,6 @@ export default function CompleteOrders() {
 
   const columns = [
     { name: "ID", width: "100px" },
-    { name: "Order Id", width: "auto" },
     { name: "Products", width: "auto" },
     { name: "Sent To", width: "auto" },
     { name: "Order Status", width: "auto" },
@@ -71,9 +70,6 @@ export default function CompleteOrders() {
       >
         <td className="px-4 py-3 w-10">
           {(currentPage - 1) * recordsPerPage + index + 1}
-        </td>
-        <td className="px-4 py-3 uppercase font-medium text-gray-900 dark:text-white whitespace-nowrap w-28">
-          {row._id}
         </td>
         <td className="md:px-4 py-3 w-48">
           <div className="p-2 space-y-2 bg-white rounded-lg shadow-md">

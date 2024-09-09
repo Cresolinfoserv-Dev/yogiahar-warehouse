@@ -17,7 +17,6 @@ export default function EditCategory() {
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
 
-  console.log(id);
   const navigate = useNavigate();
   const authToken = sessionStorage.getItem("adminToken");
 
@@ -45,7 +44,6 @@ export default function EditCategory() {
     try {
       const response = await singleCategoryGetFunction(id);
 
-      console.log(response);
       if (response.status === 200) {
         setCategory(response.data.category || []);
       }

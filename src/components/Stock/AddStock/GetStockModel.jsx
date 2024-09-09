@@ -8,6 +8,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 export default function AddStockModel({ showModal, setShowModal }) {
   const [loading, setLoading] = useState(false);
   const [stock, setStock] = useState([]);
+  const type = sessionStorage.getItem("role");
 
   const notifySuccess = (toastMessage) => {
     toast.success(toastMessage, {
@@ -39,7 +40,7 @@ export default function AddStockModel({ showModal, setShowModal }) {
     try {
       setLoading(true);
 
-      const response = await createStock({ product: stock.product });
+      const response = await createStock({ product: stock.product, type });
 
       if (response.status === 200) {
         notifySuccess("Stock data sent successfully!");

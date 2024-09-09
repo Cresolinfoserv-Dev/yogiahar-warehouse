@@ -37,6 +37,13 @@ const data = [
       },
       {
         id: 2,
+        title: "Categories",
+        icon: <FaBusinessTime />,
+        route: "/get-categories",
+        dropItems: false,
+      },
+      {
+        id: 3,
         title: "Products",
         icon: <FaBusinessTime />,
         route: "/products",
@@ -134,7 +141,11 @@ export default function Header() {
           </Link>
           <RxHamburgerMenu onClick={handleNav} className="lg:hidden block" />
         </div>
-        <div>{`Yogi Ahar ${role}`}</div>
+        <div>
+          {role === "Kitchen"
+            ? "Yogi Ahar Restaurant Warehouse"
+            : `Yogi Ahar ${role} Warehouse`}
+        </div>
         <div className="flex items-center 440Screen:space-x-6 space-x-4 ">
           <div>
             <button onClick={toggle}>

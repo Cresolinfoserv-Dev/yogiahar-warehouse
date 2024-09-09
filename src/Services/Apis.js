@@ -143,6 +143,17 @@ export const unitUpdateFunction = async (id, data, header) => {
   );
 };
 
+// Status Update Unit By ID
+
+export const unitStatusUpdateFunction = async (id, data, header) => {
+  return await commonRequest(
+    "PUT",
+    `${BASE_URL}/inventory/unit/status/${id}`,
+    data,
+    header
+  );
+};
+
 // Add Quantity To Inventory
 
 export const createStock = async (data, header) => {

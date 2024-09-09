@@ -1,105 +1,97 @@
 import { MdOutlineMailOutline } from "react-icons/md";
 import { adminLoginFunction } from "../Services/Apis";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { IoMdEyeOff } from "react-icons/io";
 import { IoEye } from "react-icons/io5";
 
-const Login = () => {
+export default function Login() {
   const navigate = useNavigate();
   const [serverError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const changeIcon = showPassword === true ? false : true;
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const notifySuccess = () => {
+  const notifySuccess = useCallback(() => {
     toast.success("Login successfully!", {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 2000,
     });
-  };
+  }, []);
 
-  const notifyError = (errorMessage) => {
+  const notifyError = useCallback((errorMessage) => {
     toast.error(errorMessage, {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 3000,
     });
-  };
+  }, []);
 
-  const handleLogin = async (data) => {
-    setLoading(true);
+  const handleLogin = useCallback(
+    async (data) => {
+      setLoading(true);
+      setServerError("");
 
-    try {
-      const response = await adminLoginFunction(data);
+      try {
+        const response = await adminLoginFunction(data);
 
-      if (
-        response.status === 200 &&
-        response.data.result.validateUser.role === "Warehouse" &&
-        response.data.result.validateUser.subRole === "CafeWarehouse"
-      ) {
-        setLoading(true);
-        notifySuccess();
-        sessionStorage.setItem("adminToken", response.data.result.token);
-        sessionStorage.setItem("role", "Cafe");
-        navigate("/dashboard");
-      } else if (
-        response.status === 200 &&
-        response.data.result.validateUser.role === "Warehouse" &&
-        response.data.result.validateUser.subRole === "BoutiqueWarehouse"
-      ) {
-        setLoading(true);
-        notifySuccess();
-        sessionStorage.setItem("adminToken", response.data.result.token);
-        sessionStorage.setItem("role", "Boutique");
-        navigate("/dashboard");
-      } else if (
-        response.status === 200 &&
-        response.data.result.validateUser.role === "Warehouse" &&
-        response.data.result.validateUser.subRole === "RestaurantWarehouse"
-      ) {
-        setLoading(true);
-        notifySuccess();
-        sessionStorage.setItem("adminToken", response.data.result.token);
-        sessionStorage.setItem("role", "Restaurant");
-        navigate("/dashboard");
-      } else {
+        if (response.status === 200) {
+          const { role, subRole } = response.data.result.validateUser;
+          const token = response.data.result.token;
+          let userRole = "";
+
+          if (role === "Warehouse") {
+            if (subRole === "CafeWarehouse") userRole = "Cafe";
+            if (subRole === "BoutiqueWarehouse") userRole = "Boutique";
+            if (subRole === "RestaurantWarehouse") userRole = "Kitchen";
+
+            if (userRole) {
+              notifySuccess();
+              sessionStorage.setItem("adminToken", token);
+              sessionStorage.setItem("role", userRole);
+              navigate("/dashboard");
+              return;
+            }
+          }
+        }
+
         notifyError("Invalid Credentials, please verify them and retry");
         setServerError("Invalid Credentials, please verify them and retry");
+      } catch (error) {
+        console.error("Catch Block Error:", error);
+        notifyError(
+          error.response?.data?.message || "Error processing your request"
+        );
+        setServerError("There was an error processing your request.");
+      } finally {
         setLoading(false);
       }
-    } catch (error) {
-      console.error("Catch Block Error:", error);
-      notifyError(error);
-      setServerError(
-        "There was an error processing your request. Please try again."
-      );
-    }
-  };
+    },
+    [navigate, notifySuccess, notifyError]
+  );
 
   useEffect(() => {
     const token = sessionStorage.getItem("adminToken");
-
     if (token) {
       navigate("/dashboard");
     } else {
       setChecking(false);
     }
-  }, []);
+  }, [navigate]);
 
-  if (checking) return;
+  if (checking) return null;
 
   return (
-    <div className="md:grid md:place-items-center md:h-screen h-[100vh] ">
-      <div className="w-full bg-white xl:w-1/2 ">
+    <div className="md:grid md:place-items-center md:h-screen h-[100vh]">
+      <div className="w-full bg-white xl:w-1/2">
         <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
           <h2 className="text-2xl font-bold text-center text-black mb-9 sm:text-title-xl2">
             Warehouse Login
@@ -107,7 +99,7 @@ const Login = () => {
 
           <form onSubmit={handleSubmit(handleLogin)}>
             <div className="mb-4">
-              <label className="mb-2.5 block font-medium text-black ">
+              <label className="mb-2.5 block font-medium text-black">
                 Email
               </label>
               <div className="relative">
@@ -123,7 +115,6 @@ const Login = () => {
                   placeholder="Enter your email"
                   className="w-full py-4 pl-6 pr-10 bg-transparent border rounded-lg outline-none border-stroke focus:border-blue-500 focus-visible:shadow-none"
                 />
-
                 <span className="absolute right-4 top-4">
                   <MdOutlineMailOutline />
                 </span>
@@ -136,7 +127,7 @@ const Login = () => {
             </div>
 
             <div className="mb-6">
-              <label className="mb-2.5 block font-medium text-black dark:text-white">
+              <label className="mb-2.5 block font-medium text-black">
                 Password
               </label>
               <div className="relative">
@@ -149,21 +140,16 @@ const Login = () => {
                       message: "Password must be at least 8 characters",
                     },
                   })}
-                  id="password"
                   placeholder="Enter Password"
                   className="w-full py-4 pl-6 pr-10 bg-transparent border rounded-lg outline-none border-stroke focus:border-blue-500 focus-visible:shadow-none"
                 />
-
                 <span
-                  className="absolute right-4 top-4"
-                  onClick={() => {
-                    setShowPassword(changeIcon);
-                  }}
+                  className="absolute right-4 top-4 cursor-pointer"
+                  onClick={() => setShowPassword(!showPassword)}
                 >
-                  {changeIcon ? <IoMdEyeOff /> : <IoEye />}
+                  {showPassword ? <IoMdEyeOff /> : <IoEye />}
                 </span>
               </div>
-
               {errors.password && (
                 <small className="text-red-500 text-start">
                   {errors.password.message}
@@ -184,13 +170,11 @@ const Login = () => {
               >
                 {loading ? "Loading..." : "Sign In"}
               </button>
-              <ToastContainer autoClose={1000} position="top-right" />
             </div>
           </form>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
-};
-
-export default Login;
+}

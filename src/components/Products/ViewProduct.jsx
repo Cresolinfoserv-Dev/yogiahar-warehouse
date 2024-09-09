@@ -6,16 +6,15 @@ import BreadCrumb from "../common/Breadcrumb";
 import BackButton from "../common/BackButton";
 
 export default function ViewProduct() {
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
 
   const getSingleDetails = async () => {
     try {
       const response = await singleProductGetFunction(id);
-
       if (response.status === 200) {
-        setData(response?.data?.product);
+        setData(response.data?.product);
       } else {
         console.error("Error fetching product details:", response.statusText);
       }
@@ -39,39 +38,53 @@ export default function ViewProduct() {
           <>
             <BreadCrumb pageName="Product View" />
             <BackButton link="products" />
+            {data ? (
+              <div className="bg-white p-6 rounded-md shadow-md">
+                <div className="flex justify-between mb-6">
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-bold">
+                      {data?.inventoryProductName}
+                    </h3>
+                    <p>{data?.inventoryProductDescription}</p>
 
-            <div className="bg-white p-6 rounded-md shadow-md">
-              <div className="flex justify-between mb-6">
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-bold">
-                    {data?.inventoryProductName}
-                  </h3>
-                  <p>{data?.inventoryProductDescription}</p>
-                  <p>Category: {data?.inventoryCategory}</p>
-                  <p>
-                    Quantity: {data?.inventoryProductQuantity} (
-                    {data?.inventoryProductUnit?.inventoryUnitName})
-                  </p>
-                  <p>SKU: {data?.inventoryProductSKUCode}</p>
-                  {data?.inventoryCategory === "Boutique" && (
-                    <p>Rupees: ₹ {data.inventoryPrice}</p>
-                  )}
-                  {data?.inventoryCategory === "Boutique" && (
-                    <img src={data.inventoryBarCode} />
-                  )}
+                    <p>
+                      Category: {data?.inventoryCategory?.inventoryCategoryName}
+                    </p>
+
+                    <p>
+                      Quantity: {data?.inventoryProductQuantity} (
+                      {data?.inventoryProductUnit?.inventoryUnitName})
+                    </p>
+                    <p>SKU: {data?.inventoryProductSKUCode}</p>
+
+                    {data?.inventoryCategory?.inventoryCategoryName ===
+                      "Boutique" && (
+                      <>
+                        <p>Rupees: ₹ {data.inventoryPrice}</p>
+                        <img src={data.inventoryBarCode} alt="BarCode" />
+                      </>
+                    )}
+                  </div>
+
+                  <div className="space-y-3 min-w-40">
+                    <h3 className="text-xl font-bold">Product Image</h3>
+                    {data?.inventoryProductImageUrl ? (
+                      <img
+                        src={data.inventoryProductImageUrl}
+                        alt={data?.inventoryProductName}
+                        className="w-36 h-auto"
+                      />
+                    ) : (
+                      <p>No image available</p>
+                    )}
+                  </div>
                 </div>
-                <div className="space-y-3 min-w-40">
-                  <h3 className="text-xl font-bold">Product Image</h3>
-                  <img
-                    src={data?.inventoryProductImageUrl}
-                    alt={data?.name}
-                    className="w-36 h-auto"
-                  />
-                </div>
+
+                <hr className="my-6" />
               </div>
-
-              <hr className="my-6" />
-            </div>
+            ) : (
+              <p className="text-center text-xl font-bold">Product not found</p>
+            )}
           </>
         )}
       </div>

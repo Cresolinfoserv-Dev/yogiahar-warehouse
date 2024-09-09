@@ -65,8 +65,6 @@ export default function UpdateProduct() {
     try {
       const { status, data } = await singleProductGetFunction(id);
 
-      console.log(data);
-
       if (status === 200) {
         const { product } = data;
         setProduct(product);
