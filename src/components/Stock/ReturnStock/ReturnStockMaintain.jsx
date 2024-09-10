@@ -14,8 +14,7 @@ export default function ReturnStockMaintain({
 }) {
   const [loading, setLoading] = useState(false);
   const [stockData, setStockData] = useState([]);
-
-  console.log(setModalVisible);
+  const categoryName = sessionStorage.getItem("role");
 
   useEffect(() => {
     const storedStock = JSON.parse(localStorage.getItem("returnStock")) || [];
@@ -35,6 +34,7 @@ export default function ReturnStockMaintain({
       const response = await sendStockFunction({
         product: stockData,
         sentTo: "Returned",
+        type: categoryName,
       });
 
       if (response.status === 200) {
@@ -61,7 +61,6 @@ export default function ReturnStockMaintain({
   };
 
   const onClose = () => {
-    console.log("ff");
     setModalVisible(false);
   };
 
