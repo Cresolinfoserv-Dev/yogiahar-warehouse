@@ -137,11 +137,14 @@ export default function InStock() {
                           {index + 1 + (currentPage - 1) * rowsPerPage}
                         </td>
                         <td className="flex items-center space-x-3 px-4 py-3 font-medium whitespace-nowrap">
-                          <img
-                            src={value.inventoryProductImageUrl}
-                            alt={value.name}
-                            className="p-1 w-8 h-8"
-                          />
+                          {value.inventoryProductImageUrl && (
+                            <img
+                              src={value.inventoryProductImageUrl}
+                              alt={value.name}
+                              className="p-1 w-8 h-8"
+                            />
+                          )}
+
                           {value.inventoryProductName}
                         </td>
                         <td className="px-4 py-3">

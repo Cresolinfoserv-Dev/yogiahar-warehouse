@@ -97,6 +97,14 @@ export default function AddStockModel({
     reset();
   };
 
+  const numberInputOnWheelPreventChange = (e) => {
+    e.target.blur();
+    e.stopPropagation();
+    setTimeout(() => {
+      e.target.focus();
+    }, 0);
+  };
+
   return (
     <>
       {showModal && (
@@ -120,7 +128,8 @@ export default function AddStockModel({
                       `(${product.inventoryProductUnit.inventoryUnitName})`}
                   </label>
                   <input
-                    type="text"
+                    type="number"
+                    onWheel={numberInputOnWheelPreventChange}
                     name="inventoryProductQuantity"
                     {...register("inventoryProductQuantity", {
                       required: "Product Quantity is required",

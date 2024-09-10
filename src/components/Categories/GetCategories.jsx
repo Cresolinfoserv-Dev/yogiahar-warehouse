@@ -153,11 +153,13 @@ export default function GetCategories() {
                           {category?.inventoryCategoryName}
                         </td>
                         <td className="px-4 py-3">
-                          <img
-                            src={category?.inventoryCategoryImageUrl}
-                            alt=""
-                            className="size-24"
-                          />
+                          {category?.inventoryCategoryImageUrl && (
+                            <img
+                              src={category?.inventoryCategoryImageUrl}
+                              alt=""
+                              className="size-24"
+                            />
+                          )}
                         </td>
                         <td className="px-4 py-3">
                           <ToggleButton

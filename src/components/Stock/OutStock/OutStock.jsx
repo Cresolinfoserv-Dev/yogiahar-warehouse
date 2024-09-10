@@ -159,6 +159,14 @@ export default function OutStock() {
     setModalVisible(true);
   };
 
+  const numberInputOnWheelPreventChange = (e) => {
+    e.target.blur();
+    e.stopPropagation();
+    setTimeout(() => {
+      e.target.focus();
+    }, 0);
+  };
+
   return (
     <Layout>
       {loading ? (
@@ -221,11 +229,14 @@ export default function OutStock() {
                           {index + 1 + (currentPage - 1) * recordsPerPage}
                         </td>
                         <td className="flex items-center space-x-3 px-4 py-3 font-medium whitespace-nowrap">
-                          <img
-                            src={value.inventoryProductImageUrl}
-                            alt={value.name}
-                            className="p-1 w-8 h-8"
-                          />
+                          {value.inventoryProductImageUrl && (
+                            <img
+                              src={value.inventoryProductImageUrl}
+                              alt={value.name}
+                              className="p-1 w-8 h-8"
+                            />
+                          )}
+
                           {value.inventoryProductName}
                         </td>
                         <td className="px-4 py-3">
@@ -247,6 +258,7 @@ export default function OutStock() {
                                 type="number"
                                 placeholder="Enter quantity"
                                 value={quantity}
+                                onWheel={numberInputOnWheelPreventChange}
                                 onChange={(e) => setQuantity(e.target.value)}
                                 className="p-2 border"
                               />

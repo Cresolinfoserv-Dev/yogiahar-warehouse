@@ -108,12 +108,14 @@ export default function ReturnStock() {
       name: "Product Name",
       selector: (row) => (
         <div className="flex items-center space-x-3">
-          <img
-            src={row.inventoryProductImageUrl}
-            alt={row.inventoryProductName}
-            width="80px"
-            className="p-1"
-          />
+          {row.inventoryProductImageUrl && (
+            <img
+              src={row.inventoryProductImageUrl}
+              alt={row.inventoryProductName}
+              className="p-1 w-8 h-8"
+            />
+          )}
+
           <p>{row.inventoryProductName}</p>
         </div>
       ),
