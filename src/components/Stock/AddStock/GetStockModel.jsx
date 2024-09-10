@@ -52,6 +52,8 @@ export default function AddStockModel({ showModal, setShowModal }) {
       setLoading(false);
     } catch (error) {
       setLoading(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,9 +62,16 @@ export default function AddStockModel({ showModal, setShowModal }) {
   };
 
   const handleDeleteStock = (index) => {
-    const updatedStock = stock?.product?.filter((_, i) => i !== index);
+    const updatedProducts = stock?.product?.filter((_, i) => i !== index);
+    const updatedStock = { ...stock, product: updatedProducts };
+
     setStock(updatedStock);
     localStorage.setItem("stockData", JSON.stringify(updatedStock));
+
+    if (updatedStock.product.length === 0) {
+      localStorage.removeItem("stockData");
+      window.location.reload();
+    }
   };
 
   return (
@@ -74,16 +83,6 @@ export default function AddStockModel({ showModal, setShowModal }) {
               <div>
                 <h2 className="text-lg font-bold">Confirm Stock Submission</h2>
                 <p>You are about to submit the following stock data:</p>
-                {stock?.product?.map((s, idx) => (
-                  <div key={idx} className="mt-2">
-                    <p>
-                      <strong>Product Name:</strong> {s.productName}
-                    </p>
-                    <p>
-                      <strong>Quantity:</strong> {s.quantity}
-                    </p>
-                  </div>
-                ))}
 
                 {stock?.product?.map((item, index) => (
                   <div key={index} className="flex justify-between p-2 gap-5">

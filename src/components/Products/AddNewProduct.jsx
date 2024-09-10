@@ -116,6 +116,14 @@ export default function AddProducts() {
     }
   };
 
+  const numberInputOnWheelPreventChange = (e) => {
+    e.target.blur();
+    e.stopPropagation();
+    setTimeout(() => {
+      e.target.focus();
+    }, 0);
+  };
+
   useEffect(() => {
     fetchUnits();
     fetchCategories();
@@ -225,6 +233,7 @@ export default function AddProducts() {
             </label>
             <input
               type="number"
+              onWheel={numberInputOnWheelPreventChange}
               name="inventorySellingPrice"
               {...register("inventorySellingPrice")}
               className="w-full p-2 mt-1 border"
@@ -240,6 +249,7 @@ export default function AddProducts() {
             </label>
             <input
               type="number"
+              onWheel={numberInputOnWheelPreventChange}
               name="inventoryCostPrice"
               {...register("inventoryCostPrice")}
               className="w-full p-2 mt-1 border"

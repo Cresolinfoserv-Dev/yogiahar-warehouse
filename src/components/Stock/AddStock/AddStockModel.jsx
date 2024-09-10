@@ -60,6 +60,8 @@ export default function AddStockModel({
         (item) => item.productId === productId
       );
 
+      const wasEmpty = existingStockData.product.length === 0;
+
       if (productIndex !== -1) {
         existingStockData.product[productIndex].quantity =
           data.inventoryProductQuantity;
@@ -79,6 +81,10 @@ export default function AddStockModel({
       setShowModal(false);
       fetchProducts();
       setLoading(false);
+
+      if (wasEmpty && existingStockData.product.length > 0) {
+        window.location.reload();
+      }
     } catch (error) {
       setLoading(false);
       notifyError("Failed to add stock.");

@@ -137,8 +137,8 @@ export default function SideMenu() {
               style={{ display: isOpen ? "block" : "none" }}
             >
               {role === "Kitchen"
-                ? "Yogi Ahar Restaurant Warehouse"
-                : `Yogi Ahar ${role} Warehouse`}
+                ? "Restaurant Warehouse"
+                : `${role} Warehouse`}
             </h5>
           </div>
         </Link>

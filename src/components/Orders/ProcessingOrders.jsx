@@ -4,7 +4,7 @@ import BreadCrumb from "../common/Breadcrumb";
 import Layout from "../layout";
 import {
   changeOrderStatusByID,
-  getStockOrdersFunction, 
+  getStockOrdersFunction,
 } from "../../Services/Apis";
 import Loading from "../common/Loading";
 import { ToastContainer, toast } from "react-toastify";
@@ -98,7 +98,16 @@ export default function ProcessingOrders() {
     },
     {
       name: "Send To",
-      selector: (row) => <p className="uppercase">{row.sentTo}</p>,
+      selector: (row) => (
+        <p className="uppercase">
+          {" "}
+          {row.sentTo === "" ? "In Stock" : row.sentTo}
+        </p>
+      ),
+    },
+    {
+      name: "Stock Type",
+      selector: (row) => <p className="uppercase">{row.stockType}</p>,
     },
     {
       name: "Order Status",

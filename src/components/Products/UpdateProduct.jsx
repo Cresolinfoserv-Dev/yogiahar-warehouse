@@ -127,6 +127,14 @@ export default function UpdateProduct() {
     }
   };
 
+  const numberInputOnWheelPreventChange = (e) => {
+    e.target.blur();
+    e.stopPropagation();
+    setTimeout(() => {
+      e.target.focus();
+    }, 0);
+  };
+
   return (
     <Layout>
       <div className="2xl:px-28 xl:px-16 px-2 md:mt-8 mt-2">
@@ -226,6 +234,7 @@ export default function UpdateProduct() {
             </label>
             <input
               type="number"
+              onWheel={numberInputOnWheelPreventChange}
               {...register("inventorySellingPrice")}
               className="w-full p-2 mt-1 border"
             />
@@ -240,6 +249,7 @@ export default function UpdateProduct() {
             </label>
             <input
               type="number"
+              onWheel={numberInputOnWheelPreventChange}
               {...register("inventoryCostPrice")}
               className="w-full p-2 mt-1 border"
             />
@@ -299,19 +309,19 @@ export default function UpdateProduct() {
             )}
           </div>
 
-          <div className="col-span-2 w-1/2 mb-4">
-            <label className="block text-sm font-medium text-gray-600">
-              Current Image
-            </label>
-            {product?.inventoryProductImageUrl && (
+          {product?.inventoryProductImageUrl && (
+            <div className="col-span-2 w-1/2 mb-4">
+              <label className="block text-sm font-medium text-gray-600">
+                Current Image
+              </label>
               <img
                 src={product.inventoryProductImageUrl}
                 alt="inventoryImg"
                 width={90}
                 className="rounded-md"
               />
-            )}
-          </div>
+            </div>
+          )}
 
           <div className="mb-4">
             <button

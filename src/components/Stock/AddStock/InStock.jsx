@@ -40,10 +40,6 @@ export default function InStock() {
     setModalVisible(true);
   };
 
-  const handleClickGetStock = () => {
-    setModalVisibleGetStock(true);
-  };
-
   const npage = useMemo(
     () => Math.ceil(data.length / rowsPerPage),
     [data.length, rowsPerPage]
@@ -74,6 +70,14 @@ export default function InStock() {
       setStock(JSON.parse(storedStock));
     }
   }, []);
+
+  const handleClickGetStock = () => {
+    if (stock?.product?.length > 0) {
+      setModalVisibleGetStock(true);
+    } else {
+      console.error("No stock available to send");
+    }
+  };
 
   return (
     <Layout>

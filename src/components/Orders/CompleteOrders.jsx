@@ -57,6 +57,7 @@ export default function CompleteOrders() {
     { name: "ID", width: "100px" },
     { name: "Products", width: "auto" },
     { name: "Sent To", width: "auto" },
+    { name: "Stock Type", width: "auto" },
     { name: "Order Status", width: "auto" },
     { name: "Completion Time", width: "auto" },
     { name: "Actions", width: "200px" },
@@ -68,10 +69,10 @@ export default function CompleteOrders() {
         key={row._id}
         className="border-b border-gray-300 dark:border-slate-700"
       >
-        <td className="px-4 py-3 w-10">
+        <td className="px-4 py-3">
           {(currentPage - 1) * recordsPerPage + index + 1}
         </td>
-        <td className="md:px-4 py-3 w-48">
+        <td className="md:px-4 py-3">
           <div className="p-2 space-y-2 bg-white rounded-lg shadow-md">
             {row.products.map((product) => (
               <div
@@ -87,8 +88,11 @@ export default function CompleteOrders() {
             ))}
           </div>
         </td>
-        <td className="px-4 py-3 w-20">{row.sentTo}</td>
-        <td className="px-4 py-3 w-20">{row.orderStatus}</td>
+        <td className="px-4 py-3 ">
+          {row.sentTo === "" ? "In Stock" : row.sentTo}
+        </td>
+        <td className="px-4 py-3 ">{row.stockType}</td>
+        <td className="px-4 py-3">{row.orderStatus}</td>
         <td className="px-4 py-3">{formatDate(row.updatedAt)}</td>
         <td className="px-4 py-3 lg:flex grid lg:space-x-5 lg:space-y-0 space-y-5 w-fit justify-center lg:mt-5">
           <Link to={`/view-order/${row._id}`}>
