@@ -11,7 +11,6 @@ export default function ReturnStock() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalShow, setModalShow] = useState(false);
   const [quantity, setQuantity] = useState("");
   const [editingRowId, setEditingRowId] = useState(null);
   const categoryName = useMemo(() => sessionStorage.getItem("role"), []);
@@ -90,6 +89,14 @@ export default function ReturnStock() {
     notifySuccess("Return Stock data saved successfully!");
   };
 
+  const numberInputOnWheelPreventChange = (e) => {
+    e.target.blur();
+    e.stopPropagation();
+    setTimeout(() => {
+      e.target.focus();
+    }, 0);
+  };
+
   const columns = [
     {
       name: "ID",
@@ -146,9 +153,10 @@ export default function ReturnStock() {
           {editingRowId === row._id ? (
             <div className="mt-2 mb-2 space-y-2">
               <input
-                type="text"
+                type="number"
                 placeholder="Enter quantity"
                 value={quantity}
+                onWheel={numberInputOnWheelPreventChange}
                 onChange={(e) => setQuantity(e.target.value)}
                 className="p-2 border"
               />
@@ -315,7 +323,10 @@ export default function ReturnStock() {
             )}
           </div>
           {modalVisible && (
-            <ReturnStockMaintain setModalVisible={setModalVisible} />
+            <ReturnStockMaintain
+              setModalVisible={setModalVisible}
+              fetchProducts={fetchProducts}
+            />
           )}
           <ToastContainer />
         </div>

@@ -47,7 +47,7 @@ export default function ReturnStockMaintain({
           toast.success("Stock updated successfully");
           localStorage.removeItem("returnStock");
           fetchProducts();
-          setShowModal(false);
+          setModalVisible(false);
         }
       } else {
         toast.error(response?.response?.data?.message);
