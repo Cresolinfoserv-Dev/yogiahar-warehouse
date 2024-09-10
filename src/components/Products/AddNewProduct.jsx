@@ -233,6 +233,7 @@ export default function AddProducts() {
             </label>
             <input
               type="number"
+              step="0.01"
               onWheel={numberInputOnWheelPreventChange}
               name="inventorySellingPrice"
               {...register("inventorySellingPrice")}
@@ -249,6 +250,7 @@ export default function AddProducts() {
             </label>
             <input
               type="number"
+              step="0.01"
               onWheel={numberInputOnWheelPreventChange}
               name="inventoryCostPrice"
               {...register("inventoryCostPrice")}

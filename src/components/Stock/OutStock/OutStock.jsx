@@ -256,6 +256,7 @@ export default function OutStock() {
                             <div className="mt-2 mb-2 space-y-2">
                               <input
                                 type="number"
+                                step="0.01"
                                 placeholder="Enter quantity"
                                 value={quantity}
                                 onWheel={numberInputOnWheelPreventChange}

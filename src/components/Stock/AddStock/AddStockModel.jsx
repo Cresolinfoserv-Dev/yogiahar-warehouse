@@ -129,6 +129,7 @@ export default function AddStockModel({
                   </label>
                   <input
                     type="number"
+                    step="0.01"
                     onWheel={numberInputOnWheelPreventChange}
                     name="inventoryProductQuantity"
                     {...register("inventoryProductQuantity", {

@@ -234,6 +234,7 @@ export default function UpdateProduct() {
             </label>
             <input
               type="number"
+              step="0.01"
               onWheel={numberInputOnWheelPreventChange}
               {...register("inventorySellingPrice")}
               className="w-full p-2 mt-1 border"
@@ -249,6 +250,7 @@ export default function UpdateProduct() {
             </label>
             <input
               type="number"
+              step="0.01"
               onWheel={numberInputOnWheelPreventChange}
               {...register("inventoryCostPrice")}
               className="w-full p-2 mt-1 border"
