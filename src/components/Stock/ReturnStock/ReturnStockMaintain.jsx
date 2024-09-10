@@ -9,11 +9,13 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 
 export default function ReturnStockMaintain({
   showModal,
-  setShowModal,
+  setModalVisible,
   fetchProducts,
 }) {
   const [loading, setLoading] = useState(false);
   const [stockData, setStockData] = useState([]);
+
+  console.log(setModalVisible);
 
   useEffect(() => {
     const storedStock = JSON.parse(localStorage.getItem("returnStock")) || [];
@@ -58,6 +60,11 @@ export default function ReturnStockMaintain({
     }
   };
 
+  const onClose = () => {
+    console.log("ff");
+    setModalVisible(false);
+  };
+
   return (
     <div>
       {showModal && stockData.length === 0 ? (
@@ -65,7 +72,7 @@ export default function ReturnStockMaintain({
           <div className="bg-white p-4 rounded-lg">
             <p className="text-lg font-semibold">No Data Found</p>
             <button
-              onClick={() => setShowModal(false)}
+              onClick={() => onClose}
               className="bg-red-500 text-white px-4 py-2 rounded"
             >
               Close
@@ -100,7 +107,7 @@ export default function ReturnStockMaintain({
                 {loading ? "Submitting..." : "Submit"}
               </button>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => setModalVisible(false)}
                 className="bg-red-500 text-white px-4 py-2 rounded"
               >
                 Cancel
@@ -115,6 +122,6 @@ export default function ReturnStockMaintain({
 
 ReturnStockMaintain.propTypes = {
   showModal: PropTypes.bool.isRequired,
-  setShowModal: PropTypes.func.isRequired,
+  setModalVisible: PropTypes.func.isRequired,
   fetchProducts: PropTypes.func.isRequired,
 };

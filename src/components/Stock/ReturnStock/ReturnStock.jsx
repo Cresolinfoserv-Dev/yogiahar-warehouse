@@ -11,6 +11,7 @@ export default function ReturnStock() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalShow, setModalShow] = useState(false);
   const [quantity, setQuantity] = useState("");
   const [editingRowId, setEditingRowId] = useState(null);
   const categoryName = useMemo(() => sessionStorage.getItem("role"), []);
@@ -140,7 +141,7 @@ export default function ReturnStock() {
     },
     {
       name: "Actions",
-      cell: (row) => (
+      selector: (row) => (
         <div>
           {editingRowId === row._id ? (
             <div className="mt-2 mb-2 space-y-2">
@@ -314,7 +315,7 @@ export default function ReturnStock() {
             )}
           </div>
           {modalVisible && (
-            <ReturnStockMaintain onClose={() => setModalVisible(false)} />
+            <ReturnStockMaintain setModalVisible={setModalVisible} />
           )}
           <ToastContainer />
         </div>
