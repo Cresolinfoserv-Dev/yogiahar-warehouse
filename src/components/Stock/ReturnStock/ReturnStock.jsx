@@ -44,6 +44,15 @@ export default function ReturnStock() {
     setEditingRowId(null);
   };
 
+  const handleQuantityChange = (e) => {
+    const value = e.target.value;
+    const validValue = value.match(/^\d*(\.\d{0,2})?$/);
+
+    if (validValue) {
+      setQuantity(value);
+    }
+  };
+
   const handleAddStock = (row) => {
     const {
       _id,
@@ -51,7 +60,7 @@ export default function ReturnStock() {
       inventoryProductQuantity,
       inventoryProductUnit,
     } = row;
-    const enteredQuantity = parseFloat(quantity);
+    const enteredQuantity = parseFloat(quantity).toFixed(2);
 
     if (isNaN(enteredQuantity) || enteredQuantity < 0.1) {
       notifyError(
@@ -160,7 +169,7 @@ export default function ReturnStock() {
                 placeholder="Enter quantity"
                 value={quantity}
                 onWheel={numberInputOnWheelPreventChange}
-                onChange={(e) => setQuantity(e.target.value)}
+                onChange={handleQuantityChange}
                 className="p-2 border"
               />
               <div className="flex space-x-2">
