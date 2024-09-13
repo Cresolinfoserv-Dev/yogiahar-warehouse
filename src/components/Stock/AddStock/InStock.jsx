@@ -101,7 +101,7 @@ export default function InStock() {
                     : "p-2 text-center text-gray-400 bg-gray-200 cursor-not-allowed w-fit"
                 }
               >
-                Send Stock
+                Add Stock
               </h4>
             </button>
           </div>

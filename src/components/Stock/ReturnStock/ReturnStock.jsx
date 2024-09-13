@@ -242,7 +242,7 @@ export default function ReturnStock() {
                     : "text-gray-400 bg-gray-200 cursor-not-allowed"
                 } w-fit`}
               >
-                Add Stock
+                Return Stock
               </h4>
             </div>
           </div>
