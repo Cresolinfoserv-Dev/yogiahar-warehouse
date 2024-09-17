@@ -70,7 +70,6 @@ export default function OutStock() {
   const [modalVisible, setModalVisible] = useState(false);
   const [productId, setProductId] = useState("");
   const categoryName = sessionStorage.getItem("role");
-
   const recordsPerPage = 10;
 
   const fetchProducts = async () => {
@@ -125,20 +124,24 @@ export default function OutStock() {
 
   const handleAddStock = (row) => {
     const enteredQuantity = parseFloat(quantity).toFixed(2);
-    if (!enteredQuantity || enteredQuantity < 0.1) {
+
+    if (!enteredQuantity || parseFloat(enteredQuantity) < 0.1) {
       notifyError(
         "Please enter a valid quantity greater than or equal to 0.1."
       );
       return;
     }
-    if (enteredQuantity > row.inventoryProductQuantity) {
+
+    const availableStock = parseFloat(row.inventoryProductQuantity);
+
+    if (enteredQuantity > availableStock) {
       notifyError("Insufficient stock available.");
       return;
     }
 
     const stockData = {
       role: categoryName,
-      quantity: enteredQuantity,
+      quantity: parseFloat(enteredQuantity),
       productId: row._id,
       productName: row.inventoryProductName,
       unit: row.inventoryProductUnit.inventoryUnitName,
@@ -150,7 +153,8 @@ export default function OutStock() {
     );
 
     if (existingProductIndex !== -1) {
-      existingStock[existingProductIndex].quantity = enteredQuantity;
+      existingStock[existingProductIndex].quantity =
+        parseFloat(enteredQuantity);
     } else {
       existingStock.push(stockData);
     }

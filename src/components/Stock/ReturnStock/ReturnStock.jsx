@@ -62,20 +62,22 @@ export default function ReturnStock() {
     } = row;
     const enteredQuantity = parseFloat(quantity).toFixed(2);
 
-    if (isNaN(enteredQuantity) || enteredQuantity < 0.1) {
+    if (isNaN(enteredQuantity) || parseFloat(enteredQuantity) < 0.1) {
       notifyError(
         "Please enter a valid quantity greater than or equal to 0.1."
       );
       return;
     }
 
-    if (enteredQuantity > inventoryProductQuantity) {
+    const availableStock = parseFloat(inventoryProductQuantity);
+
+    if (enteredQuantity > availableStock) {
       notifyError("Insufficient stock available.");
       return;
     }
 
     const stockData = {
-      quantity: enteredQuantity,
+      quantity: parseFloat(enteredQuantity),
       productId: _id,
       productName: inventoryProductName,
       unit: inventoryProductUnit.inventoryUnitName,
@@ -87,7 +89,8 @@ export default function ReturnStock() {
     );
 
     if (existingProductIndex !== -1) {
-      existingStock[existingProductIndex].quantity = enteredQuantity;
+      existingStock[existingProductIndex].quantity =
+        parseFloat(enteredQuantity);
     } else {
       existingStock.push(stockData);
     }
