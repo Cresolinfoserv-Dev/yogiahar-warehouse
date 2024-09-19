@@ -22,14 +22,14 @@ export default function ReturnStock() {
     setLoading(true);
     try {
       const response = await getProductsFunction(categoryName);
-      if (response.status === 200) {
-        setData(response.data.products);
+      if (response.status === 200 && response?.data?.products) {
+        setData(response?.data?.products);
       } else {
-        notifyError("Failed to fetch products");
+        setData([]);
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
-      notifyError("An error occurred while fetching products.");
+      console.error("Error fetching Products:", error);
+      setData([]);
     } finally {
       setLoading(false);
     }

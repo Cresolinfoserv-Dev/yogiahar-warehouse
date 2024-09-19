@@ -76,11 +76,14 @@ export default function OutStock() {
     setLoading(true);
     try {
       const response = await getProductsFunction(categoryName);
-      if (response.status === 200) {
+      if (response.status === 200 && response?.data?.products) {
         setData(response?.data?.products);
+      } else {
+        setData([]);
       }
     } catch (error) {
       console.error("Error fetching Products:", error);
+      setData([]);
     } finally {
       setLoading(false);
     }
@@ -91,6 +94,7 @@ export default function OutStock() {
   }, []);
 
   const records = useMemo(() => {
+    if (!Array.isArray(data)) return [];
     const lastIndex = currentPage * recordsPerPage;
     const firstIndex = lastIndex - recordsPerPage;
     return data.slice(firstIndex, lastIndex);

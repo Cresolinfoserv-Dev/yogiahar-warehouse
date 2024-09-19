@@ -16,7 +16,6 @@ export default function EditCategory() {
   const [updatedImages, setUpdatedImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
-
   const navigate = useNavigate();
   const authToken = sessionStorage.getItem("adminToken");
 

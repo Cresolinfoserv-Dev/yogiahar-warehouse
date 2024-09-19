@@ -67,6 +67,8 @@ const Dashboard = () => {
         format(new Date(order.updatedAt), "yyyy-MM-dd") <= formattedToDate
     );
 
+    console.log(filteredOrders);
+
     if (filteredOrders.length > 0) {
       const productMap = new Map();
 
@@ -75,18 +77,27 @@ const Dashboard = () => {
           const productId = product.productID._id;
           const productName = product.productID.inventoryProductName;
           const sendQuantity = parseFloat(product.sendQuantity);
+          const returnQuantity = parseFloat(product.returnQuantity);
           const stockType = order.stockType;
           const date = order.updatedAt;
 
           if (productMap.has(productId)) {
             const existingData = productMap.get(productId);
-            existingData.sendQuantity += sendQuantity;
+
+            if (stockType === "In") {
+              existingData.inQuantity += sendQuantity;
+            } else if (stockType === "Out") {
+              existingData.outQuantity += sendQuantity;
+              existingData.returnQuantities += returnQuantity;
+            }
+
             productMap.set(productId, existingData);
           } else {
             productMap.set(productId, {
               productName: productName,
-              sendQuantity: sendQuantity,
-              stockType: stockType,
+              inQuantity: stockType === "In" ? sendQuantity : 0,
+              outQuantity: stockType === "Out" ? sendQuantity : 0,
+              returnQuantities: stockType === "Out" ? returnQuantity : 0,
               date: date,
             });
           }

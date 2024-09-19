@@ -7,13 +7,6 @@ export const adminLoginFunction = async (data, header) => {
   return await commonRequest("POST", `${BASE_URL}/login`, data, header);
 };
 
-//get category
-export const getCategoryFunction = async (categoryName) => {
-  return await commonRequest(
-    "GET",
-    `${BASE_URL}/inventory/category/filter/${categoryName}`
-  );
-};
 // Create Category Function
 
 export const createCategoryFunction = async (data, header) => {
@@ -22,6 +15,15 @@ export const createCategoryFunction = async (data, header) => {
     `${BASE_URL}/inventory/category/create`,
     data,
     header
+  );
+};
+
+// Filtered Category By Role
+
+export const getCategoryFunction = async (categoryName) => {
+  return await commonRequest(
+    "GET",
+    `${BASE_URL}/inventory/category/filter/${categoryName}`
   );
 };
 
@@ -122,10 +124,14 @@ export const createUnitsCodes = async (data, header) => {
 
 // Units
 
-export const getUnitsFunction = async () => {
-  return await commonRequest("GET", `${BASE_URL}/inventory/unit/get`, "");
-};
+// Filtered Category By Role
 
+export const getUnitsFunction = async (categoryName) => {
+  return await commonRequest(
+    "GET",
+    `${BASE_URL}/inventory/unit/filter/get/${categoryName}`
+  );
+};
 // Single Unit By ID
 
 export const singleUnitGetFunction = async (id) => {

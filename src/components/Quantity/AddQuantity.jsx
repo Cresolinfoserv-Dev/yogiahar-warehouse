@@ -12,6 +12,7 @@ const AddQuantity = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const authToken = sessionStorage.getItem("adminToken");
+  const role = sessionStorage.getItem("role");
 
   const {
     register,
@@ -84,6 +85,13 @@ const AddQuantity = () => {
               </small>
             )}
           </div>
+
+          <input
+            type="text"
+            hidden
+            value={role}
+            {...register("inventoryUnitType", {})}
+          />
 
           <div className="mb-4">
             <button

@@ -17,6 +17,7 @@ export default function GetQuantity() {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
+  const categoryName = sessionStorage.getItem("role");
 
   useEffect(() => {
     fetchUnits();
@@ -25,7 +26,7 @@ export default function GetQuantity() {
   const fetchUnits = async () => {
     setLoading(true);
     try {
-      const response = await getUnitsFunction();
+      const response = await getUnitsFunction(categoryName);
       if (response.status === 200) {
         setData(response.data.units || []);
       } else {

@@ -25,6 +25,7 @@ export default function AddProducts() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm();
 
   const notifySuccess = () => {
@@ -43,8 +44,10 @@ export default function AddProducts() {
 
   const fetchUnits = async () => {
     setLoading(true);
+
+    let categoryName = role;
     try {
-      const response = await getUnitsFunction();
+      const response = await getUnitsFunction(categoryName);
 
       if (response.status === 200) {
         setUnits(response.data.units);
@@ -128,6 +131,8 @@ export default function AddProducts() {
     fetchUnits();
     fetchCategories();
   }, []);
+
+  const costPrice = watch("inventoryCostPrice");
 
   return (
     <Layout>
@@ -226,23 +231,6 @@ export default function AddProducts() {
 
           <div className="mb-4">
             <label
-              htmlFor="inventorySellingPrice"
-              className="block text-sm font-medium text-gray-600"
-            >
-              Product Selling Price
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              onWheel={numberInputOnWheelPreventChange}
-              name="inventorySellingPrice"
-              {...register("inventorySellingPrice")}
-              className="w-full p-2 mt-1 border"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label
               htmlFor="inventoryCostPrice"
               className="block text-sm font-medium text-gray-600"
             >
@@ -256,6 +244,33 @@ export default function AddProducts() {
               {...register("inventoryCostPrice")}
               className="w-full p-2 mt-1 border"
             />
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="inventorySellingPrice"
+              className="block text-sm font-medium text-gray-600"
+            >
+              Product Selling Price
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              onWheel={numberInputOnWheelPreventChange}
+              name="inventorySellingPrice"
+              {...register("inventorySellingPrice", {
+                validate: (value) =>
+                  !costPrice ||
+                  parseFloat(value) <= parseFloat(costPrice) ||
+                  "Selling price cannot be greater than cost price",
+              })}
+              className="w-full p-2 mt-1 border"
+            />
+            {errors.inventorySellingPrice && (
+              <small className="text-red-500">
+                {errors.inventorySellingPrice.message}
+              </small>
+            )}
           </div>
 
           <div className="mb-4">
@@ -316,17 +331,18 @@ export default function AddProducts() {
             )}
           </div>
 
-          <div className="mb-4">
+          <div className="flex justify-end col-span-2 mb-4">
             <button
               type="submit"
-              className="p-2 text-white bg-blue-500 rounded-md w-fit hover:bg-blue-600"
+              className="px-4 py-2 text-white bg-indigo-600 rounded-md"
+              disabled={loading}
             >
-              {loading ? "Adding Product..." : "Create Product"}
+              {loading ? "Submitting..." : "Submit"}
             </button>
           </div>
         </form>
-        <ToastContainer />
       </div>
+      <ToastContainer />
     </Layout>
   );
 }

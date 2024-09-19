@@ -28,6 +28,7 @@ export default function UpdateProduct() {
     register,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -37,6 +38,7 @@ export default function UpdateProduct() {
       inventorySellingPrice: "",
       inventoryProductUnit: "",
       inventoryCategory: "",
+      inventoryCostPrice: "",
     },
   });
 
@@ -50,8 +52,10 @@ export default function UpdateProduct() {
   const handleImage = (e) => setUpdatedImages(e.target.files);
 
   const fetchUnits = async () => {
+    let categoryName = role;
+
     try {
-      const { status, data } = await getUnitsFunction();
+      const { status, data } = await getUnitsFunction(categoryName);
       if (status === 200) {
         setUnits(data.units);
       }
@@ -227,22 +231,6 @@ export default function UpdateProduct() {
 
           <div className="mb-4">
             <label
-              htmlFor="inventorySellingPrice"
-              className="block text-sm font-medium text-gray-600"
-            >
-              Product Selling Price
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              onWheel={numberInputOnWheelPreventChange}
-              {...register("inventorySellingPrice")}
-              className="w-full p-2 mt-1 border"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label
               htmlFor="inventoryCostPrice"
               className="block text-sm font-medium text-gray-600"
             >
@@ -255,6 +243,35 @@ export default function UpdateProduct() {
               {...register("inventoryCostPrice")}
               className="w-full p-2 mt-1 border"
             />
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="inventorySellingPrice"
+              className="block text-sm font-medium text-gray-600"
+            >
+              Product Selling Price
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              onWheel={numberInputOnWheelPreventChange}
+              {...register("inventorySellingPrice", {
+                validate: (value) => {
+                  const costPrice = getValues("inventoryCostPrice");
+                  return (
+                    value <= costPrice ||
+                    "Selling price cannot be greater than cost price"
+                  );
+                },
+              })}
+              className="w-full p-2 mt-1 border"
+            />
+            {errors.inventorySellingPrice && (
+              <small className="text-red-500">
+                {errors.inventorySellingPrice.message}
+              </small>
+            )}
           </div>
 
           <div className="mb-4">

@@ -25,6 +25,8 @@ export default function ViewProduct() {
     }
   };
 
+  console.log(data);
+
   useEffect(() => {
     getSingleDetails();
   }, [id]);
@@ -57,10 +59,10 @@ export default function ViewProduct() {
                     </p>
                     <p>SKU: {data?.inventoryProductSKUCode}</p>
 
-                    {data?.inventoryCategory?.inventoryCategoryName ===
-                      "Boutique" && (
+                    {data?.inventoryCategory?.inventoryType === "Boutique" && (
                       <>
-                        <p>Rupees: ₹ {data.inventoryPrice}</p>
+                        <p>Cost Price: ₹ {data.inventoryCostPrice}</p>
+                        <p>Selling Price: ₹ {data.inventorySellingPrice}</p>
                         <img src={data.inventoryBarCode} alt="BarCode" />
                       </>
                     )}
