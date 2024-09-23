@@ -15,7 +15,7 @@ export default function ReturnStock() {
   const [editingRowId, setEditingRowId] = useState(null);
   const categoryName = useMemo(() => sessionStorage.getItem("role"), []);
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 10;
+  const rowsPerPage = 20;
   const storedStock = JSON.parse(localStorage.getItem("returnStock"));
 
   const fetchProducts = async () => {

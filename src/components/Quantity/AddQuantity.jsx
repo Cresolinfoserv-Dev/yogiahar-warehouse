@@ -13,6 +13,7 @@ const AddQuantity = () => {
   const navigate = useNavigate();
   const authToken = sessionStorage.getItem("adminToken");
   const role = sessionStorage.getItem("role");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     register,
@@ -47,8 +48,12 @@ const AddQuantity = () => {
         notifySuccess();
         setLoading(false);
         navigate("/get-quantity");
+      } else if (response.response.status === 422) {
+        setErrorMessage(response.response.data.message);
+        setLoading(false);
       }
     } catch (error) {
+      setLoading(false);
       notifyError(error.message);
       console.error(error);
     }
@@ -83,6 +88,14 @@ const AddQuantity = () => {
               <small className="text-red-500 text-start">
                 {errors.inventoryUnitName.message}
               </small>
+            )}
+
+            {errorMessage && (
+              <div>
+                <small className="text-red-500 text-center">
+                  {errorMessage}
+                </small>
+              </div>
             )}
           </div>
 

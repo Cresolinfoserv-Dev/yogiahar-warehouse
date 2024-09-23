@@ -70,7 +70,7 @@ export default function OutStock() {
   const [modalVisible, setModalVisible] = useState(false);
   const [productId, setProductId] = useState("");
   const categoryName = sessionStorage.getItem("role");
-  const recordsPerPage = 10;
+  const recordsPerPage = 20;
 
   const fetchProducts = async () => {
     setLoading(true);

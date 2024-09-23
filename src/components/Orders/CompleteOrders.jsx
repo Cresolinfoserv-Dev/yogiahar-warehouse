@@ -9,7 +9,7 @@ export default function CompleteOrders() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 10;
+  const recordsPerPage = 20;
   const categoryName = useMemo(() => sessionStorage.getItem("role"), []);
 
   const fetchOrders = useCallback(async () => {

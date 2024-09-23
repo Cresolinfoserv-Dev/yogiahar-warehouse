@@ -9,7 +9,7 @@ import GetStockModel from "./GetStockModel";
 export default function InStock() {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage] = useState(10);
+  const [rowsPerPage] = useState(20);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleGetStock, setModalVisibleGetStock] = useState(false);

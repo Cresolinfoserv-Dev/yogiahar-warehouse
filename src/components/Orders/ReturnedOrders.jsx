@@ -9,15 +9,15 @@ export default function ReturnedOrders() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 10;
+  const recordsPerPage = 20;
   const categoryName = sessionStorage.getItem("role");
-
   const lastIndex = useMemo(() => currentPage * recordsPerPage, [currentPage]);
   const firstIndex = useMemo(() => lastIndex - recordsPerPage, [lastIndex]);
   const paginatedData = useMemo(
     () => data.slice(firstIndex, lastIndex),
     [data, firstIndex, lastIndex]
   );
+
   const totalPages = useMemo(
     () => Math.ceil(data.length / recordsPerPage),
     [data.length]

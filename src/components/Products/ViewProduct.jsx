@@ -25,8 +25,6 @@ export default function ViewProduct() {
     }
   };
 
-  console.log(data);
-
   useEffect(() => {
     getSingleDetails();
   }, [id]);

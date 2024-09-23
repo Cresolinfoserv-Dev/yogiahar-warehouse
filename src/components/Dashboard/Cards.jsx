@@ -67,8 +67,6 @@ const Dashboard = () => {
         format(new Date(order.updatedAt), "yyyy-MM-dd") <= formattedToDate
     );
 
-    console.log(filteredOrders);
-
     if (filteredOrders.length > 0) {
       const productMap = new Map();
 
