@@ -1,10 +1,10 @@
 // Test
 
-// export const BASE_URL = "https://oneness-shop-backend-test.onrender.com";
+export const BASE_URL = "https://oneness-shop-backend-test.onrender.com";
 
 // Live
 
-export const BASE_URL = "https://yogi-ahar-backend.onrender.com";
+// export const BASE_URL = "https://yogi-ahar-backend.onrender.com";
 
 // Demo
 

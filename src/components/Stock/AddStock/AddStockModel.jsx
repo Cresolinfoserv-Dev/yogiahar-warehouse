@@ -134,6 +134,10 @@ export default function AddStockModel({
                     name="inventoryProductQuantity"
                     {...register("inventoryProductQuantity", {
                       required: "Product Quantity is required",
+                      pattern: {
+                        value: /^\d+(\.\d{1,2})?$/,
+                        message: "Only two decimal places are allowed",
+                      },
                     })}
                     className="w-full p-2 mt-1 border"
                   />
