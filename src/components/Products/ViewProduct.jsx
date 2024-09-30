@@ -61,6 +61,8 @@ export default function ViewProduct() {
                       <>
                         <p>Cost Price: ₹ {data.inventoryCostPrice}</p>
                         <p>Selling Price: ₹ {data.inventorySellingPrice}</p>
+                        <p>GST Percent: {data.gstPercent}%</p>
+                        <p>GST Amount: ₹ {data.gstAmount}</p>
                         <img src={data.inventoryBarCode} alt="BarCode" />
                       </>
                     )}
@@ -79,6 +81,24 @@ export default function ViewProduct() {
                     )}
                   </div>
                 </div>
+
+                {data?.vendorDetails.length > 0 && (
+                  <div>
+                    <h3 className="text-xl font-bold">Vendor Details</h3>
+                    {data?.vendorDetails.map((item) => (
+                      <div key={item._id}>
+                        <p>Vendor Name: {item.name}</p>
+                        <p>Landing Cost: {item.landingCost}</p>
+                        <p>Contact: {item.contact}</p>
+                        <p>Address: {item.address}</p>
+                        <p>City: {item.city}</p>
+                        <p>Batch Number: {item.batchNumber}</p>
+                        <p>GST: {item.gst}</p>
+                        <p>IGST: {item.igst}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 <hr className="my-6" />
               </div>

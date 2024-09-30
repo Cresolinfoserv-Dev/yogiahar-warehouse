@@ -23,7 +23,6 @@ export default function UpdateProduct() {
   const authToken = sessionStorage.getItem("adminToken");
   const role = sessionStorage.getItem("role");
   const [category, setCategory] = useState([]);
-
   const {
     register,
     handleSubmit,
@@ -39,6 +38,7 @@ export default function UpdateProduct() {
       inventoryProductUnit: "",
       inventoryCategory: "",
       inventoryCostPrice: "",
+      gstPercent: "",
     },
   });
 
@@ -240,9 +240,17 @@ export default function UpdateProduct() {
               type="number"
               step="0.01"
               onWheel={numberInputOnWheelPreventChange}
-              {...register("inventoryCostPrice")}
+              {...register("inventoryCostPrice", {
+                required:
+                  role === "Boutique" ? "Cost Price is required" : false,
+              })}
               className="w-full p-2 mt-1 border"
             />
+            {errors.inventoryCostPrice && (
+              <small className="text-red-500">
+                {errors.inventoryCostPrice.message}
+              </small>
+            )}
           </div>
 
           <div className="mb-4">
@@ -270,6 +278,27 @@ export default function UpdateProduct() {
             {errors.inventorySellingPrice && (
               <small className="text-red-500">
                 {errors.inventorySellingPrice.message}
+              </small>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600">
+              GST Percentage
+            </label>
+            <input
+              type="number"
+              placeholder="Enter GST Percent"
+              onWheel={numberInputOnWheelPreventChange}
+              {...register("gstPercent", {
+                required:
+                  role === "Boutique" ? "GST Percent is required" : false,
+              })}
+              className="mt-1 p-2 border w-full"
+            />
+            {errors.gstPercent && (
+              <small className="text-red-500">
+                {errors.gstPercent.message}
               </small>
             )}
           </div>

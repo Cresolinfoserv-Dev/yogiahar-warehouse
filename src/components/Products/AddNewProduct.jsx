@@ -20,7 +20,6 @@ export default function AddProducts() {
   const authToken = sessionStorage.getItem("adminToken");
   const role = sessionStorage.getItem("role");
   const [category, setCategory] = useState([]);
-
   const {
     register,
     handleSubmit,
@@ -92,6 +91,9 @@ export default function AddProducts() {
     }
     if (data.inventoryCostPrice) {
       formData.append("inventoryCostPrice", data.inventoryCostPrice);
+    }
+    if (data.gstPercent) {
+      formData.append("gstPercent", data.gstPercent);
     }
     formData.append("inventoryProductUnit", data.inventoryProductUnit);
     formData.append("inventoryCategory", data.inventoryCategory);
@@ -241,9 +243,17 @@ export default function AddProducts() {
               step="0.01"
               onWheel={numberInputOnWheelPreventChange}
               name="inventoryCostPrice"
-              {...register("inventoryCostPrice")}
+              {...register("inventoryCostPrice", {
+                required:
+                  role === "Boutique" ? "Cost Price is required" : false,
+              })}
               className="w-full p-2 mt-1 border"
             />
+            {errors.inventoryCostPrice && (
+              <small className="text-red-500">
+                {errors.inventoryCostPrice.message}
+              </small>
+            )}
           </div>
 
           <div className="mb-4">
@@ -269,6 +279,27 @@ export default function AddProducts() {
             {errors.inventorySellingPrice && (
               <small className="text-red-500">
                 {errors.inventorySellingPrice.message}
+              </small>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600">
+              GST Percentage
+            </label>
+            <input
+              type="number"
+              placeholder="Enter GST Percent"
+              onWheel={numberInputOnWheelPreventChange}
+              {...register("gstPercent", {
+                required:
+                  role === "Boutique" ? "GST Percent is required" : false,
+              })}
+              className="mt-1 p-2 border w-full"
+            />
+            {errors.gstPercent && (
+              <small className="text-red-500">
+                {errors.gstPercent.message}
               </small>
             )}
           </div>
