@@ -292,11 +292,14 @@ export default function UpdateProduct() {
             </label>
             <input
               type="number"
+              step="1"
               placeholder="Enter GST Percent"
               onWheel={numberInputOnWheelPreventChange}
               {...register("gstPercent", {
-                required:
-                  role === "Boutique" ? "GST Percent is required" : false,
+                required: "GST Percent is required",
+                validate: (value) =>
+                  Number.isInteger(Number(value)) ||
+                  "Only integers are allowed",
               })}
               className="mt-1 p-2 border w-full"
             />

@@ -124,13 +124,7 @@ export default function AddVendorDetails({
                   <input
                     type="text"
                     name="landingCost"
-                    {...register("landingCost", {
-                      required: "Landing Cost is required",
-                      maxLength: {
-                        value: 15,
-                        message: "Please enter 15 Characters",
-                      },
-                    })}
+                    {...register("landingCost")}
                     className="w-full p-2 mt-1 border"
                   />
                   {errors.landingCost && (
@@ -177,9 +171,7 @@ export default function AddVendorDetails({
                   <input
                     type="text"
                     name="address"
-                    {...register("address", {
-                      required: "address is required",
-                    })}
+                    {...register("address")}
                     className="w-full p-2 mt-1 border"
                   />
                   {errors.address && (
@@ -199,13 +191,7 @@ export default function AddVendorDetails({
                   <input
                     type="text"
                     name="city"
-                    {...register("city", {
-                      required: "City is required",
-                      maxLength: {
-                        value: 30,
-                        message: "Please enter 30 Characters",
-                      },
-                    })}
+                    {...register("city")}
                     className="w-full p-2 mt-1 border"
                   />
                   {errors.city && (
@@ -226,13 +212,7 @@ export default function AddVendorDetails({
                     type="number"
                     name="gst"
                     onWheel={numberInputOnWheelPreventChange}
-                    {...register("gst", {
-                      required: "GST is required",
-                      maxLength: {
-                        value: 10,
-                        message: "Please enter 10 Characters",
-                      },
-                    })}
+                    {...register("gst")}
                     className="w-full p-2 mt-1 border"
                   />
                   {errors.gst && (
@@ -250,13 +230,7 @@ export default function AddVendorDetails({
                   <input
                     type="number"
                     name="igst"
-                    {...register("igst", {
-                      required: "IGST is required",
-                      maxLength: {
-                        value: 10,
-                        message: "Please enter 10 Characters",
-                      },
-                    })}
+                    {...register("igst")}
                     className="w-full p-2 mt-1 border"
                     onWheel={numberInputOnWheelPreventChange}
                   />
@@ -276,13 +250,7 @@ export default function AddVendorDetails({
                   <input
                     type="text"
                     name="batchNumber"
-                    {...register("batchNumber", {
-                      required: "Batch Number is required",
-                      maxLength: {
-                        value: 10,
-                        message: "Please enter 10 Characters",
-                      },
-                    })}
+                    {...register("batchNumber")}
                     className="w-full p-2 mt-1 border"
                   />
                   {errors.batchNumber && (
