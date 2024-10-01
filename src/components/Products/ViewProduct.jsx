@@ -4,11 +4,17 @@ import { singleProductGetFunction } from "../../Services/Apis";
 import Layout from "../layout";
 import BreadCrumb from "../common/Breadcrumb";
 import BackButton from "../common/BackButton";
+import AddVendorDetails from "./AddVendorDetails";
+import { FiEdit } from "react-icons/fi";
+import EditVendorDetails from "./EditVendorDetails";
 
 export default function ViewProduct() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
+  const [modalAddVendor, setModalAddVendor] = useState(false);
+  const [modalEditVendor, setModalEditVendor] = useState(false);
+  const [vendorId, setVendorId] = useState("");
 
   const getSingleDetails = async () => {
     try {
@@ -29,6 +35,15 @@ export default function ViewProduct() {
     getSingleDetails();
   }, [id]);
 
+  const handleClickAddVendor = () => {
+    setModalAddVendor(true);
+  };
+
+  const handleClickEditVendor = (vendorId) => {
+    setVendorId(vendorId);
+    setModalEditVendor(true);
+  };
+
   return (
     <Layout>
       <div className="container mx-auto p-6">
@@ -38,6 +53,14 @@ export default function ViewProduct() {
           <>
             <BreadCrumb pageName="Product View" />
             <BackButton link="products" />
+            <div className="mb-4">
+              <button
+                className="p-2 text-center text-white bg-black hover:bg-white hover:text-black hover:duration-500 w-fit"
+                onClick={() => handleClickAddVendor()}
+              >
+                Add vendor details
+              </button>
+            </div>
             {data ? (
               <div className="bg-white p-6 rounded-md shadow-md">
                 <div className="flex justify-between mb-6">
@@ -84,17 +107,28 @@ export default function ViewProduct() {
 
                 {data?.vendorDetails.length > 0 && (
                   <div>
-                    <h3 className="text-xl font-bold">Vendor Details</h3>
+                    <h3 className="text-xl font-bold ">Vendor Details</h3>
                     {data?.vendorDetails.map((item) => (
-                      <div key={item._id}>
-                        <p>Vendor Name: {item.name}</p>
-                        <p>Landing Cost: {item.landingCost}</p>
-                        <p>Contact: {item.contact}</p>
-                        <p>Address: {item.address}</p>
-                        <p>City: {item.city}</p>
-                        <p>Batch Number: {item.batchNumber}</p>
-                        <p>GST: {item.gst}</p>
-                        <p>IGST: {item.igst}</p>
+                      <div className="pb-4 flex gap-5" key={item._id}>
+                        <div>
+                          <p>Vendor Name: {item.name}</p>
+                          <p>Landing Cost: {item.landingCost}</p>
+                          <p>Contact: {item.contact}</p>
+                          <p>Address: {item.address}</p>
+                          <p>City: {item.city}</p>
+                          <p>Batch Number: {item.batchNumber}</p>
+                          <p>GST: {item.gst}</p>
+                          <p>IGST: {item.igst}</p>
+                        </div>
+
+                        <div className="mb-4">
+                          <button
+                            className="p-2 text-center text-white bg-black hover:bg-white hover:text-black hover:duration-500 w-fit"
+                            onClick={() => handleClickEditVendor(item._id)}
+                          >
+                            <FiEdit />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -108,6 +142,24 @@ export default function ViewProduct() {
           </>
         )}
       </div>
+
+      {modalAddVendor && (
+        <AddVendorDetails
+          showModal={modalAddVendor}
+          setShowModal={setModalAddVendor}
+          productId={id}
+        />
+      )}
+      {modalEditVendor && (
+        <EditVendorDetails
+          showModal={modalEditVendor}
+          setShowModal={setModalEditVendor}
+          productId={id}
+          vendorId={vendorId}
+          vendorData={data?.vendorDetails}
+          getSingleDetails={getSingleDetails}
+        />
+      )}
     </Layout>
   );
 }

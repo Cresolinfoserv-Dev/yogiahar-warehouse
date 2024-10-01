@@ -70,6 +70,32 @@ export const createProductsFunction = async (data, header) => {
   );
 };
 
+// Create vendor details Function
+
+export const createVendorDetailsFunction = async (productId, data, header) => {
+  return await commonRequest(
+    "POST",
+    `${BASE_URL}/inventory/product/vendor/add/${productId}`,
+    data,
+    header
+  );
+};
+// update vendor details Function
+
+export const updateVendorDetailsFunction = async (
+  productId,
+  vendorId,
+  data,
+  header
+) => {
+  return await commonRequest(
+    "PUT",
+    `${BASE_URL}/inventory/product/vendor/update/${vendorId}/${productId}`,
+    data,
+    header
+  );
+};
+
 // Get Products Function
 
 export const getProductsFunction = async (categoryName) => {
