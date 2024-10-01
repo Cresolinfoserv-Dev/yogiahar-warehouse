@@ -243,10 +243,7 @@ export default function AddProducts() {
               step="0.01"
               onWheel={numberInputOnWheelPreventChange}
               name="inventoryCostPrice"
-              {...register("inventoryCostPrice", {
-                required:
-                  role === "Boutique" ? "Cost Price is required" : false,
-              })}
+              {...register("inventoryCostPrice")}
               className="w-full p-2 mt-1 border"
             />
             {errors.inventoryCostPrice && (
@@ -268,12 +265,19 @@ export default function AddProducts() {
               step="0.01"
               onWheel={numberInputOnWheelPreventChange}
               name="inventorySellingPrice"
-              {...register("inventorySellingPrice", {
-                validate: (value) =>
-                  !costPrice ||
-                  parseFloat(value) <= parseFloat(costPrice) ||
-                  "Selling price cannot be greater than cost price",
-              })}
+              {...register(
+                "inventorySellingPrice",
+                {
+                  required:
+                    role === "Boutique" ? "Selling Price is required" : false,
+                },
+                {
+                  validate: (value) =>
+                    !costPrice ||
+                    parseFloat(value) <= parseFloat(costPrice) ||
+                    "Selling price cannot be greater than cost price",
+                }
+              )}
               className="w-full p-2 mt-1 border"
             />
             {errors.inventorySellingPrice && (

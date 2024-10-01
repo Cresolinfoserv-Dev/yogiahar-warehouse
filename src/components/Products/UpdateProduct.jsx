@@ -240,10 +240,7 @@ export default function UpdateProduct() {
               type="number"
               step="0.01"
               onWheel={numberInputOnWheelPreventChange}
-              {...register("inventoryCostPrice", {
-                required:
-                  role === "Boutique" ? "Cost Price is required" : false,
-              })}
+              {...register("inventoryCostPrice")}
               className="w-full p-2 mt-1 border"
             />
             {errors.inventoryCostPrice && (
@@ -264,15 +261,22 @@ export default function UpdateProduct() {
               type="number"
               step="0.01"
               onWheel={numberInputOnWheelPreventChange}
-              {...register("inventorySellingPrice", {
-                validate: (value) => {
-                  const costPrice = getValues("inventoryCostPrice");
-                  return (
-                    value <= costPrice ||
-                    "Selling price cannot be greater than cost price"
-                  );
+              {...register(
+                "inventorySellingPrice",
+                {
+                  required:
+                    role === "Boutique" ? "Selling Price is required" : false,
                 },
-              })}
+                {
+                  validate: (value) => {
+                    const costPrice = getValues("inventoryCostPrice");
+                    return (
+                      value <= costPrice ||
+                      "Selling price cannot be greater than cost price"
+                    );
+                  },
+                }
+              )}
               className="w-full p-2 mt-1 border"
             />
             {errors.inventorySellingPrice && (
