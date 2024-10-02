@@ -96,7 +96,7 @@ const data = [
       },
       {
         id: 3,
-        title: "Returned Orders",
+        title: "Returned Stock",
         icon: <FaBusinessTime />,
         route: "/returned-orders",
         dropItems: false,

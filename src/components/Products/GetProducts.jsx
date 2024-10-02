@@ -86,7 +86,6 @@ export default function GetProducts() {
       { name: "Unit", width: "150px" },
       { name: "Quantity", width: "150px" },
       { name: "Category", width: "150px" },
-      { name: "Status", width: "150px" },
       {
         name: "Actions",
         width: "200px",
@@ -94,6 +93,10 @@ export default function GetProducts() {
     ],
     []
   );
+
+  if (categoryName === "Boutique") {
+    columns.push({ name: "Status", width: "150px" });
+  }
 
   const handleToggleStatus = async (id, status) => {
     const authToken = sessionStorage.getItem("adminToken");
@@ -175,19 +178,6 @@ export default function GetProducts() {
                           {product?.inventoryCategory?.inventoryCategoryName}
                         </td>
                         <td className="px-4 py-3">
-                          <ToggleButton
-                            value={isStatusActive(
-                              product.inventoryProductStatus
-                            )}
-                            onToggle={() =>
-                              handleToggleStatus(
-                                product._id,
-                                product.inventoryProductStatus
-                              )
-                            }
-                          />
-                        </td>
-                        <td className="px-4 py-3">
                           <div className="flex justify-center p-1 space-x-2">
                             <Link to={`/product/update/${product._id}`}>
                               <small className="px-2 bg-green-100 border border-green-600 rounded-sm hover:bg-green-200">
@@ -201,6 +191,21 @@ export default function GetProducts() {
                             </Link>
                           </div>
                         </td>
+                        {categoryName === "Boutique" && (
+                          <td className="px-4 py-3">
+                            <ToggleButton
+                              value={isStatusActive(
+                                product.inventoryProductStatus
+                              )}
+                              onToggle={() =>
+                                handleToggleStatus(
+                                  product._id,
+                                  product.inventoryProductStatus
+                                )
+                              }
+                            />
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>

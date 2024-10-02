@@ -84,7 +84,6 @@ export default function GetCategories() {
       { name: "ID", width: "100px" },
       { name: "Category Name", width: "300px" },
       { name: "Category Image", width: "150px" },
-      { name: "Status", width: "150px" },
       {
         name: "Actions",
         width: "200px",
@@ -92,6 +91,10 @@ export default function GetCategories() {
     ],
     []
   );
+
+  if (categoryName === "Boutique") {
+    columns.push({ name: "Status", width: "150px" });
+  }
 
   const handleToggleStatus = async (id, status) => {
     const authToken = sessionStorage.getItem("adminToken");
@@ -161,19 +164,7 @@ export default function GetCategories() {
                             />
                           )}
                         </td>
-                        <td className="px-4 py-3">
-                          <ToggleButton
-                            value={isStatusActive(
-                              category.inventoryCategoryStatus
-                            )}
-                            onToggle={() =>
-                              handleToggleStatus(
-                                category._id,
-                                category.inventoryCategoryStatus
-                              )
-                            }
-                          />
-                        </td>
+
                         <td className="px-4 py-3">
                           <div className="grid gap-2">
                             <Link to={`/edit-categories/${category._id}`}>
@@ -183,6 +174,22 @@ export default function GetCategories() {
                             </Link>
                           </div>
                         </td>
+
+                        {categoryName === "Boutique" && (
+                          <td className="px-4 py-3">
+                            <ToggleButton
+                              value={isStatusActive(
+                                category.inventoryCategoryStatus
+                              )}
+                              onToggle={() =>
+                                handleToggleStatus(
+                                  category._id,
+                                  category.inventoryCategoryStatus
+                                )
+                              }
+                            />
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>

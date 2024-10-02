@@ -23,6 +23,10 @@ const Dashboard = () => {
   const [orders, setOrders] = useState([]);
   const [stockReport, setStockReport] = useState(new Map());
 
+  const [allOrders, setAllOrders] = useState([]);
+
+  console.log("stockReport", stockReport);
+
   const fetchData = async () => {
     const dataToUpdate = {
       totalOrders: 0,
@@ -35,6 +39,8 @@ const Dashboard = () => {
       const [ordersResponse] = await Promise.allSettled([
         getStockOrdersFunction(categoryName),
       ]);
+
+      setAllOrders(ordersResponse?.value?.data?.allOrders);
 
       if (ordersResponse.status === "fulfilled" && ordersResponse.value.data) {
         dataToUpdate.totalOrders = ordersResponse.value.data.allOrders.length;
@@ -61,7 +67,7 @@ const Dashboard = () => {
     const formattedFromDate = format(fromDate, "yyyy-MM-dd");
     const formattedToDate = format(toDate, "yyyy-MM-dd");
 
-    const filteredOrders = orders.filter(
+    const filteredOrders = allOrders.filter(
       (order) =>
         format(new Date(order.updatedAt), "yyyy-MM-dd") >= formattedFromDate &&
         format(new Date(order.updatedAt), "yyyy-MM-dd") <= formattedToDate
@@ -75,9 +81,11 @@ const Dashboard = () => {
           const productId = product.productID._id;
           const productName = product.productID.inventoryProductName;
           const sendQuantity = parseFloat(product.sendQuantity);
-          const returnQuantity = parseFloat(product.returnQuantity);
+          const outQuantity = parseFloat(product.sendQuantity);
+          const returnQuantity = parseFloat(product.sendQuantity);
           const stockType = order.stockType;
           const date = order.updatedAt;
+          const orderStatus = order.orderStatus;
 
           if (productMap.has(productId)) {
             const existingData = productMap.get(productId);
@@ -85,8 +93,8 @@ const Dashboard = () => {
             if (stockType === "In") {
               existingData.inQuantity += sendQuantity;
             } else if (stockType === "Out") {
-              existingData.outQuantity += sendQuantity;
-              existingData.returnQuantities += returnQuantity;
+              existingData.outQuantity += outQuantity;
+              existingData.sendQuantity += returnQuantity;
             }
 
             productMap.set(productId, existingData);
@@ -94,12 +102,19 @@ const Dashboard = () => {
             productMap.set(productId, {
               productName: productName,
               inQuantity: stockType === "In" ? sendQuantity : 0,
-              outQuantity: stockType === "Out" ? sendQuantity : 0,
-              returnQuantities: stockType === "Out" ? returnQuantity : 0,
+              outQuantity:
+                stockType === "Out" && orderStatus !== "Returned"
+                  ? outQuantity
+                  : 0,
+              returnQuantities:
+                stockType === "Out" && orderStatus == "Returned"
+                  ? returnQuantity
+                  : 0,
               date: date,
             });
           }
         });
+        console.log(filteredOrders);
       });
 
       setStockReport(productMap);

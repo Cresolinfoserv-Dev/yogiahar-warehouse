@@ -136,14 +136,16 @@ export default function GetQuantity() {
           {(currentPage - 1) * recordsPerPage + index + 1}
         </td>
         <td className="px-4 py-3 uppercase">{row.inventoryUnitName}</td>
-        <td className="px-4 py-3">
-          <ToggleButton
-            value={isStatusActive(row.inventoryUnitStatus)}
-            onToggle={() =>
-              handleToggleStatus(row._id, row.inventoryUnitStatus)
-            }
-          />
-        </td>
+        {categoryName === "Boutique" && (
+          <td className="px-4 py-3">
+            <ToggleButton
+              value={isStatusActive(row.inventoryUnitStatus)}
+              onToggle={() =>
+                handleToggleStatus(row._id, row.inventoryUnitStatus)
+              }
+            />
+          </td>
+        )}
         <td className="px-4 py-3">
           <Link to={`/update-quantity/${row._id}`}>
             <button className="px-2 bg-green-100 border border-green-600 rounded-sm hover:bg-green-200">
@@ -178,7 +180,9 @@ export default function GetQuantity() {
                     <tr>
                       <th className="px-4 py-3 w-20">ID</th>
                       <th className="px-4 py-3 w-20">Units Name</th>
-                      <th className="px-4 py-3 w-20">Status</th>
+                      {categoryName === "Boutique" && (
+                        <th className="px-4 py-3 w-20">Status</th>
+                      )}
                       <th className="px-4 py-3 w-20">Actions</th>
                     </tr>
                   </thead>

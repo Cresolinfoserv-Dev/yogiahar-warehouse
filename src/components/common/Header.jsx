@@ -102,7 +102,7 @@ const data = [
       },
       {
         id: 3,
-        title: "Returned Orders",
+        title: "Returned orders",
         icon: <FaBusinessTime />,
         route: "/returned-orders",
         dropItems: false,

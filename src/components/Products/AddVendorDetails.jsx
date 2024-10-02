@@ -78,9 +78,12 @@ export default function AddVendorDetails({
     <>
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-gray-700 bg-opacity-50">
-          <div className="w-full max-w-md p-6 space-y-6 bg-white rounded-md shadow-lg">
+          <div className="w-full max-w-3xl p-6 space-y-6 bg-white rounded-md shadow-lg">
             <div>
-              <form onSubmit={handleSubmit(onSubmit)}>
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="grid grid-cols-2 gap-6"
+              >
                 <div className="mb-4">
                   <label
                     htmlFor="name"
@@ -212,7 +215,13 @@ export default function AddVendorDetails({
                     type="number"
                     name="gst"
                     onWheel={numberInputOnWheelPreventChange}
-                    {...register("gst")}
+                    {...register("gst", {
+                      maxLength: {
+                        value: 15,
+                        message: "Please enter 15 Characters",
+                      },
+                    })}
+                    maxLength={15}
                     className="w-full p-2 mt-1 border"
                   />
                   {errors.gst && (
@@ -230,7 +239,13 @@ export default function AddVendorDetails({
                   <input
                     type="number"
                     name="igst"
-                    {...register("igst")}
+                    {...register("igst", {
+                      maxLength: {
+                        value: 15,
+                        message: "Please enter 15 Characters",
+                      },
+                    })}
+                    maxLength={15}
                     className="w-full p-2 mt-1 border"
                     onWheel={numberInputOnWheelPreventChange}
                   />
