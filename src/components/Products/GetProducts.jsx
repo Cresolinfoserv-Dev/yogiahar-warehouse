@@ -2,13 +2,8 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import BreadCrumb from "../common/Breadcrumb";
 import Layout from "../layout";
-import {
-  getProductsFunction,
-  productUpdateStatusFunction,
-} from "../../Services/Apis";
+import { getProductsFunction } from "../../Services/Apis";
 import Loading from "../common/Loading";
-import ToggleButton from "react-toggle-button";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function GetProducts() {
@@ -33,20 +28,6 @@ export default function GetProducts() {
     () => [...Array(npage).keys()].map((n) => n + 1),
     [npage]
   );
-
-  const notifySuccess = (toastMessage) => {
-    toast.success(toastMessage, {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 2000,
-    });
-  };
-
-  const notifyError = (errorMessage) => {
-    toast.error(errorMessage, {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 3000,
-    });
-  };
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -93,33 +74,6 @@ export default function GetProducts() {
     ],
     []
   );
-
-  if (categoryName === "Boutique") {
-    columns.push({ name: "Status", width: "150px" });
-  }
-
-  const handleToggleStatus = async (id, status) => {
-    const authToken = sessionStorage.getItem("adminToken");
-    const headers = { Authorization: authToken };
-    const newStatus = status === "Active" ? "Inactive" : "Active";
-
-    try {
-      const response = await productUpdateStatusFunction(
-        id,
-        { newStatus },
-        headers
-      );
-      if (response.status === 200) {
-        notifySuccess("Product Status Changed!");
-        fetchProducts();
-      }
-    } catch (error) {
-      notifyError(error);
-      console.error("Error updating product status:", error);
-    }
-  };
-
-  const isStatusActive = (status) => status === "Active";
 
   return (
     <Layout>
@@ -191,21 +145,6 @@ export default function GetProducts() {
                             </Link>
                           </div>
                         </td>
-                        {categoryName === "Boutique" && (
-                          <td className="px-4 py-3">
-                            <ToggleButton
-                              value={isStatusActive(
-                                product.inventoryProductStatus
-                              )}
-                              onToggle={() =>
-                                handleToggleStatus(
-                                  product._id,
-                                  product.inventoryProductStatus
-                                )
-                              }
-                            />
-                          </td>
-                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -252,7 +191,6 @@ export default function GetProducts() {
           </div>
         </div>
       )}
-      <ToastContainer />
     </Layout>
   );
 }

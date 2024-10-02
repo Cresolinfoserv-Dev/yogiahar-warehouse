@@ -2,14 +2,9 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import BreadCrumb from "../common/Breadcrumb";
 import Layout from "../layout";
-import {
-  getUnitsFunction,
-  unitStatusUpdateFunction,
-} from "../../Services/Apis";
+import { getUnitsFunction } from "../../Services/Apis";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../common/Loading";
-import ToggleButton from "react-toggle-button";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function GetQuantity() {
@@ -29,12 +24,9 @@ export default function GetQuantity() {
       const response = await getUnitsFunction(categoryName);
       if (response.status === 200) {
         setData(response.data.units || []);
-      } else {
-        notifyError("Failed to fetch units.");
       }
     } catch (error) {
       console.error("Error fetching units:", error);
-      notifyError("Error fetching units.");
     } finally {
       setLoading(false);
     }
@@ -53,45 +45,6 @@ export default function GetQuantity() {
   const handlePageChange = useCallback((newPage) => {
     setCurrentPage(newPage);
   }, []);
-
-  const handleToggleStatus = useCallback(async (id, status) => {
-    const authToken = sessionStorage.getItem("adminToken");
-    const headers = { Authorization: authToken };
-    const newStatus = status === "Active" ? "Inactive" : "Active";
-
-    try {
-      const response = await unitStatusUpdateFunction(
-        id,
-        { newStatus },
-        headers
-      );
-      if (response.status === 200) {
-        notifySuccess("Unit Status Updated!");
-        fetchUnits();
-      } else {
-        notifyError("Failed to update status.");
-      }
-    } catch (error) {
-      console.error("Error updating unit status:", error);
-      notifyError("Error updating unit status.");
-    }
-  }, []);
-
-  const notifySuccess = (message) => {
-    toast.success(message, {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 2000,
-    });
-  };
-
-  const notifyError = (message) => {
-    toast.error(message, {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 3000,
-    });
-  };
-
-  const isStatusActive = useCallback((status) => status === "Active", []);
 
   const renderPaginationButtons = () => (
     <div className="flex justify-center my-4 space-x-2">
@@ -136,16 +89,6 @@ export default function GetQuantity() {
           {(currentPage - 1) * recordsPerPage + index + 1}
         </td>
         <td className="px-4 py-3 uppercase">{row.inventoryUnitName}</td>
-        {categoryName === "Boutique" && (
-          <td className="px-4 py-3">
-            <ToggleButton
-              value={isStatusActive(row.inventoryUnitStatus)}
-              onToggle={() =>
-                handleToggleStatus(row._id, row.inventoryUnitStatus)
-              }
-            />
-          </td>
-        )}
         <td className="px-4 py-3">
           <Link to={`/update-quantity/${row._id}`}>
             <button className="px-2 bg-green-100 border border-green-600 rounded-sm hover:bg-green-200">
@@ -180,9 +123,6 @@ export default function GetQuantity() {
                     <tr>
                       <th className="px-4 py-3 w-20">ID</th>
                       <th className="px-4 py-3 w-20">Units Name</th>
-                      {categoryName === "Boutique" && (
-                        <th className="px-4 py-3 w-20">Status</th>
-                      )}
                       <th className="px-4 py-3 w-20">Actions</th>
                     </tr>
                   </thead>
@@ -192,7 +132,6 @@ export default function GetQuantity() {
               </>
             )}
           </div>
-          <ToastContainer />
         </div>
       )}
     </Layout>

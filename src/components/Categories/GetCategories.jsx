@@ -3,12 +3,7 @@ import { Link } from "react-router-dom";
 import BreadCrumb from "../common/Breadcrumb";
 import Layout from "../layout";
 import Loading from "../common/Loading";
-import {
-  categoryUpdateStatusFunction,
-  getCategoryFunction,
-} from "../../Services/Apis";
-import ToggleButton from "react-toggle-button";
-import { ToastContainer, toast } from "react-toastify";
+import { getCategoryFunction } from "../../Services/Apis";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function GetCategories() {
@@ -33,20 +28,6 @@ export default function GetCategories() {
     () => [...Array(npage).keys()].map((n) => n + 1),
     [npage]
   );
-
-  const notifySuccess = (toastMessage) => {
-    toast.success(toastMessage, {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 2000,
-    });
-  };
-
-  const notifyError = (errorMessage) => {
-    toast.error(errorMessage, {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 3000,
-    });
-  };
 
   const fetchCategories = useCallback(async () => {
     setLoading(true);
@@ -91,33 +72,6 @@ export default function GetCategories() {
     ],
     []
   );
-
-  if (categoryName === "Boutique") {
-    columns.push({ name: "Status", width: "150px" });
-  }
-
-  const handleToggleStatus = async (id, status) => {
-    const authToken = sessionStorage.getItem("adminToken");
-    const headers = { Authorization: authToken };
-    const newStatus = status === "Active" ? "Inactive" : "Active";
-
-    try {
-      const response = await categoryUpdateStatusFunction(
-        id,
-        { newStatus },
-        headers
-      );
-      if (response.status === 200) {
-        notifySuccess("Category Status Changed!");
-        fetchCategories();
-      }
-    } catch (error) {
-      notifyError(error);
-      console.error("Error updating Category status:", error);
-    }
-  };
-
-  const isStatusActive = (status) => status === "Active";
 
   return (
     <Layout>
@@ -174,22 +128,6 @@ export default function GetCategories() {
                             </Link>
                           </div>
                         </td>
-
-                        {categoryName === "Boutique" && (
-                          <td className="px-4 py-3">
-                            <ToggleButton
-                              value={isStatusActive(
-                                category.inventoryCategoryStatus
-                              )}
-                              onToggle={() =>
-                                handleToggleStatus(
-                                  category._id,
-                                  category.inventoryCategoryStatus
-                                )
-                              }
-                            />
-                          </td>
-                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -236,8 +174,6 @@ export default function GetCategories() {
           </div>
         </div>
       )}
-
-      <ToastContainer />
     </Layout>
   );
 }
