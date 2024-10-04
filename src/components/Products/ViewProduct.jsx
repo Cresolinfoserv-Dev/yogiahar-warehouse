@@ -148,6 +148,7 @@ export default function ViewProduct() {
           showModal={modalAddVendor}
           setShowModal={setModalAddVendor}
           productId={id}
+          getSingleDetails={getSingleDetails}
         />
       )}
       {modalEditVendor && (

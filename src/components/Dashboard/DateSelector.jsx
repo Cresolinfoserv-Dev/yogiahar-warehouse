@@ -27,7 +27,7 @@ export default function DateSelector({
 
   return (
     <div className="flex flex-col mt-8 space-y-4 md:flex-row md:space-y-0 md:space-x-4">
-      <div className="flex items-center gap-4">
+      <div className="md:flex items-center gap-4">
         <div>
           <label className="block text-gray-700">From Date:</label>
           <DatePicker

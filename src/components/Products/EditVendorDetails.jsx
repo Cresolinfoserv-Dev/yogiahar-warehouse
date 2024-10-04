@@ -222,11 +222,16 @@ export default function EditVendorDetails({
                   </label>
                   <input
                     type="text"
+                    name="gst"
                     onWheel={numberInputOnWheelPreventChange}
                     {...register("gst", {
+                      minLength: {
+                        value: 15,
+                        message: "Please enter exactly 15 characters",
+                      },
                       maxLength: {
                         value: 15,
-                        message: "Please enter 15 digits",
+                        message: "Please enter exactly 15 characters",
                       },
                     })}
                     maxLength={15}
@@ -246,15 +251,20 @@ export default function EditVendorDetails({
                   </label>
                   <input
                     type="text"
+                    name="igst"
+                    onWheel={numberInputOnWheelPreventChange}
                     {...register("igst", {
+                      minLength: {
+                        value: 15,
+                        message: "Please enter exactly 15 characters",
+                      },
                       maxLength: {
                         value: 15,
-                        message: "Please enter 15 digits",
+                        message: "Please enter exactly 15 characters",
                       },
                     })}
                     maxLength={15}
                     className="w-full p-2 mt-1 border"
-                    onWheel={numberInputOnWheelPreventChange}
                   />
                   {errors.igst && (
                     <small className="text-red-500">

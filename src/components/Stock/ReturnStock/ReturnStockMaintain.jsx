@@ -35,6 +35,7 @@ export default function ReturnStockMaintain({
         product: stockData,
         sentTo: "Returned",
         type: categoryName,
+        stockType: "Returned",
       });
 
       if (response.status === 200) {

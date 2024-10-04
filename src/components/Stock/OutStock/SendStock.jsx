@@ -48,6 +48,7 @@ const SendStock = ({ showModal, setShowModal, fetchProducts }) => {
         product: stockData,
         sentTo,
         type: categoryName,
+        stockType: "Out",
       });
 
       if (response.status === 200) {

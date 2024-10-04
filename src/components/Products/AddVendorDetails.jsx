@@ -3,12 +3,12 @@ import { toast, ToastContainer } from "react-toastify";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { createVendorDetailsFunction } from "../../Services/Apis";
-import { useNavigate } from "react-router-dom";
 
 export default function AddVendorDetails({
   showModal,
   setShowModal,
   productId,
+  getSingleDetails,
 }) {
   const {
     register,
@@ -19,8 +19,6 @@ export default function AddVendorDetails({
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const authToken = sessionStorage.getItem("adminToken");
-
-  const navigate = useNavigate();
 
   const notifySuccess = (toastMessage) => {
     toast.success(toastMessage, {
@@ -61,9 +59,10 @@ export default function AddVendorDetails({
         headers
       );
       if (response.status === 200) {
+        setShowModal(false);
         notifySuccess();
         setLoading(false);
-        navigate("/products");
+        getSingleDetails();
       } else if (response.response.status === 422) {
         setErrorMessage(response.response.data.message);
         setLoading(false);
@@ -212,13 +211,17 @@ export default function AddVendorDetails({
                     GST
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     name="gst"
                     onWheel={numberInputOnWheelPreventChange}
                     {...register("gst", {
+                      minLength: {
+                        value: 15,
+                        message: "Please enter exactly 15 characters",
+                      },
                       maxLength: {
                         value: 15,
-                        message: "Please enter 15 Characters",
+                        message: "Please enter exactly 15 characters",
                       },
                     })}
                     maxLength={15}
@@ -237,17 +240,21 @@ export default function AddVendorDetails({
                     IGST
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     name="igst"
+                    onWheel={numberInputOnWheelPreventChange}
                     {...register("igst", {
+                      minLength: {
+                        value: 15,
+                        message: "Please enter exactly 15 characters",
+                      },
                       maxLength: {
                         value: 15,
-                        message: "Please enter 15 Characters",
+                        message: "Please enter exactly 15 characters",
                       },
                     })}
                     maxLength={15}
                     className="w-full p-2 mt-1 border"
-                    onWheel={numberInputOnWheelPreventChange}
                   />
                   {errors.igst && (
                     <small className="text-red-500">
@@ -255,6 +262,7 @@ export default function AddVendorDetails({
                     </small>
                   )}
                 </div>
+
                 <div className="mb-4">
                   <label
                     htmlFor="batchNumber"
@@ -305,4 +313,5 @@ AddVendorDetails.propTypes = {
   showModal: PropTypes.bool.isRequired,
   setShowModal: PropTypes.func.isRequired,
   productId: PropTypes.string.isRequired,
+  getSingleDetails: PropTypes.func.isRequired,
 };

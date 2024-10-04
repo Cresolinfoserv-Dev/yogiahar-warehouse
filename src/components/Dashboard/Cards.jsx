@@ -20,12 +20,8 @@ const Dashboard = () => {
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
   const categoryName = sessionStorage.getItem("role");
-  const [orders, setOrders] = useState([]);
   const [stockReport, setStockReport] = useState(new Map());
-
   const [allOrders, setAllOrders] = useState([]);
-
-  console.log("stockReport", stockReport);
 
   const fetchData = async () => {
     const dataToUpdate = {
@@ -50,7 +46,6 @@ const Dashboard = () => {
           ordersResponse.value.data.completedOrders.length;
         dataToUpdate.totalReturnedOrders =
           ordersResponse.value.data.returnedOrders.length;
-        setOrders(ordersResponse.value.data.completedOrders);
       } else {
         console.error("Error fetching orders:", ordersResponse.reason);
       }
@@ -80,12 +75,14 @@ const Dashboard = () => {
         order.products.forEach((product) => {
           const productId = product.productID._id;
           const productName = product.productID.inventoryProductName;
-          const sendQuantity = parseFloat(product.sendQuantity);
-          const outQuantity = parseFloat(product.sendQuantity);
-          const returnQuantity = parseFloat(product.sendQuantity);
+          const sendQuantity = parseFloat(product.sendQuantity) || 0;
+          const returnQuantity = parseFloat(product.returnQuantity) || 0;
           const stockType = order.stockType;
-          const date = order.updatedAt;
-          const orderStatus = order.orderStatus;
+
+          let outQuantity = 0;
+          if (stockType === "Out") {
+            outQuantity = sendQuantity - returnQuantity;
+          }
 
           if (productMap.has(productId)) {
             const existingData = productMap.get(productId);
@@ -94,7 +91,8 @@ const Dashboard = () => {
               existingData.inQuantity += sendQuantity;
             } else if (stockType === "Out") {
               existingData.outQuantity += outQuantity;
-              existingData.sendQuantity += returnQuantity;
+            } else if (stockType === "Returned") {
+              existingData.returnQuantities += sendQuantity;
             }
 
             productMap.set(productId, existingData);
@@ -102,19 +100,12 @@ const Dashboard = () => {
             productMap.set(productId, {
               productName: productName,
               inQuantity: stockType === "In" ? sendQuantity : 0,
-              outQuantity:
-                stockType === "Out" && orderStatus !== "Returned"
-                  ? outQuantity
-                  : 0,
-              returnQuantities:
-                stockType === "Out" && orderStatus == "Returned"
-                  ? returnQuantity
-                  : 0,
-              date: date,
+              outQuantity: stockType === "Out" ? outQuantity : 0,
+              returnQuantities: stockType === "Returned" ? sendQuantity : 0,
+              date: order.updatedAt,
             });
           }
         });
-        console.log(filteredOrders);
       });
 
       setStockReport(productMap);
@@ -154,7 +145,7 @@ const Dashboard = () => {
         />
 
         <div className="gap-10 mt-10 bg-white md:flex">
-          <div className="md:w-1/2">
+          <div className="w-full">
             <StockTable stockReport={stockReport} />
           </div>
         </div>

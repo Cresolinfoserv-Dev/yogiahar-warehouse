@@ -88,21 +88,21 @@ const data = [
     dropItems: [
       {
         id: 1,
-        title: "Processing orders",
+        title: "Processing Orders",
         icon: <FaBusinessTime />,
         route: "/processing-orders",
         dropItems: false,
       },
       {
         id: 2,
-        title: "Completed orders",
+        title: "Completed Orders",
         icon: <FaBusinessTime />,
         route: "/completed-orders",
         dropItems: false,
       },
       {
         id: 3,
-        title: "Returned orders",
+        title: "Returned Orders",
         icon: <FaBusinessTime />,
         route: "/returned-orders",
         dropItems: false,
