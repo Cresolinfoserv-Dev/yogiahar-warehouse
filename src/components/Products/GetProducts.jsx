@@ -132,7 +132,7 @@ export default function GetProducts() {
                           {product?.inventoryCategory?.inventoryCategoryName}
                         </td>
                         <td className="px-4 py-3">
-                          <div className="flex justify-center p-1 space-x-2">
+                          <div className="flex justify-start p-1 space-x-2">
                             <Link to={`/product/update/${product._id}`}>
                               <small className="px-2 bg-green-100 border border-green-600 rounded-sm hover:bg-green-200">
                                 Edit
