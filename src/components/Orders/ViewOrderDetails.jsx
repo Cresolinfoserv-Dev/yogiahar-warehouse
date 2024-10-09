@@ -70,9 +70,15 @@ const ViewOrderDetails = () => {
                     <th className="block p-2 font-semibold text-left text-gray-700 border border-gray-300 md:table-cell">
                       Unit
                     </th>
-                    <th className="block p-2 font-semibold text-left text-gray-700 border border-gray-300 md:table-cell">
-                      Return Stock
-                    </th>
+                    {data?.products?.map((o) => (
+                      <>
+                        {o?.productOrderStatus === "Returned" && (
+                          <th className="block p-2 font-semibold text-left text-gray-700 border border-gray-300 md:table-cell">
+                            Return Stock
+                          </th>
+                        )}
+                      </>
+                    ))}
                   </tr>
                 </thead>
                 <tbody className="block md:table-row-group">
@@ -94,14 +100,10 @@ const ViewOrderDetails = () => {
                               ?.inventoryUnitName
                           }
                         </td>
-                        {o?.productOrderStatus === "Returned" ? (
+                        {o?.productOrderStatus === "Returned" && (
                           <td className="block p-2 text-gray-500 border border-gray-300 md:table-cell">
                             {o?.returnQuantity}
                           </td>
-                        ) : (
-                          <span className="p-2 text-gray-500">
-                            No Returned Stock Available
-                          </span>
                         )}
                       </tr>
                     </React.Fragment>

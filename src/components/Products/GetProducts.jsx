@@ -89,7 +89,7 @@ export default function GetProducts() {
               </h4>
             </Link>
           </div>
-          <div className="p-4 bg-white rounded-lg shadow-md">
+          <div className="p-4 bg-white rounded-lg shadow-md overflow-x-scroll">
             {data.length === 0 ? (
               <h1>No Data Found</h1>
             ) : (

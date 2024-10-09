@@ -111,14 +111,24 @@ export default function ViewProduct() {
                     {data?.vendorDetails.map((item) => (
                       <div className="pb-4 flex gap-5" key={item._id}>
                         <div>
-                          <p>Vendor Name: {item.name}</p>
-                          <p>Landing Cost: {item.landingCost}</p>
-                          <p>Contact: {item.contact}</p>
-                          <p>Address: {item.address}</p>
-                          <p>City: {item.city}</p>
-                          <p>Batch Number: {item.batchNumber}</p>
-                          <p>GST: {item.gst}</p>
-                          <p>IGST: {item.igst}</p>
+                          {item.name && <p>Vendor Name: {item.name}</p>}
+
+                          {item.landingCost && (
+                            <p>Landing Cost: {item.landingCost}</p>
+                          )}
+
+                          {item.contact && <p>Contact: {item.contact}</p>}
+
+                          {item.address && <p>Address: {item.address}</p>}
+
+                          {item.city && <p>City: {item.city}</p>}
+
+                          {item.batchNumber && (
+                            <p>Batch Number: {item.batchNumber}</p>
+                          )}
+                          {item.gst && <p>GST: {item.gst}</p>}
+
+                          {item.igst && <p>IGST: {item.igst}</p>}
                         </div>
 
                         <div className="mb-4">
