@@ -296,12 +296,18 @@ export default function AddProducts() {
               step="1"
               placeholder="Enter GST Percent"
               onWheel={numberInputOnWheelPreventChange}
-              {...register("gstPercent", {
-                required: "GST Percent is required",
-                validate: (value) =>
-                  Number.isInteger(Number(value)) ||
-                  "Only integers are allowed",
-              })}
+              {...register(
+                "gstPercent",
+                {
+                  required:
+                    role === "Boutique" ? "GST Percent is required" : false,
+                },
+                {
+                  validate: (value) =>
+                    Number.isInteger(Number(value)) ||
+                    "Only integers are allowed",
+                }
+              )}
               className="mt-1 p-2 border w-full"
             />
             {errors.gstPercent && (
@@ -309,6 +315,21 @@ export default function AddProducts() {
                 {errors.gstPercent.message}
               </small>
             )}
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="inventoryBarCodeId"
+              className="block text-sm font-medium text-gray-600"
+            >
+              Product Bar Code
+            </label>
+            <input
+              type="text"
+              name="inventoryProductQuantity"
+              {...register("inventoryBarCodeId")}
+              className="w-full p-2 mt-1 border"
+            />
           </div>
 
           <div className="mb-4">

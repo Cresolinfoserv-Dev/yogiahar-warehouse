@@ -16,6 +16,7 @@ export default function UpdateQuantity() {
   const navigate = useNavigate();
   const { id } = useParams();
   const authToken = sessionStorage.getItem("adminToken");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     register,
@@ -75,6 +76,9 @@ export default function UpdateQuantity() {
         notifySuccess();
         setLoading(false);
         navigate("/get-quantity");
+      } else if (response.response.status === 422) {
+        setErrorMessage(response.response.data.message);
+        setLoading(false);
       }
     } catch (error) {
       console.error("Unit update error:", error);
@@ -111,6 +115,14 @@ export default function UpdateQuantity() {
               <small className="text-red-500 text-start">
                 {errors.inventoryUnitName.message}
               </small>
+            )}
+
+            {errorMessage && (
+              <div>
+                <small className="text-red-500 text-center">
+                  {errorMessage}
+                </small>
+              </div>
             )}
           </div>
 

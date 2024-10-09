@@ -7,6 +7,7 @@ import BackButton from "../common/BackButton";
 import AddVendorDetails from "./AddVendorDetails";
 import { FiEdit } from "react-icons/fi";
 import EditVendorDetails from "./EditVendorDetails";
+import { format } from "date-fns";
 
 export default function ViewProduct() {
   const [data, setData] = useState(null);

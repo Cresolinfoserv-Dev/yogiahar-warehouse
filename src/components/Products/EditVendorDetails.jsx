@@ -293,6 +293,36 @@ export default function EditVendorDetails({
                 </div>
 
                 <div className="mb-4">
+                  <label
+                    htmlFor="expiryDate"
+                    className="block text-sm font-medium text-gray-600"
+                  >
+                    Expiry Date
+                  </label>
+                  <input
+                    type="Date"
+                    name="expiryDate"
+                    {...register("expiryDate")}
+                    className="w-full p-2 mt-1 border"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label
+                    htmlFor="manufacturedDate"
+                    className="block text-sm font-medium text-gray-600"
+                  >
+                    Manufactured Date
+                  </label>
+                  <input
+                    type="Date"
+                    name="manufacturedDate"
+                    {...register("manufacturedDate")}
+                    className="w-full p-2 mt-1 border"
+                  />
+                </div>
+
+                <div className="mb-4">
                   <button
                     type="submit"
                     className="p-2 text-white bg-blue-500 rounded-md w-fit hover:bg-blue-600"

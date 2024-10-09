@@ -18,6 +18,7 @@ export default function EditCategory() {
   const { id } = useParams();
   const navigate = useNavigate();
   const authToken = sessionStorage.getItem("adminToken");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     register,
@@ -85,8 +86,9 @@ export default function EditCategory() {
       if (response.status === 200) {
         notify("success", "category Updated successfully!");
         navigate("/get-categories");
-      } else {
-        notify("error", response.response.data.message);
+      } else if (response.response.status === 422) {
+        setErrorMessage(response.response.data.message);
+        setLoading(false);
       }
     } catch (error) {
       console.error("Category update error:", error);
@@ -143,6 +145,14 @@ export default function EditCategory() {
               <small className="text-red-500">
                 {errors.inventoryCategoryName.message}
               </small>
+            )}
+
+            {errorMessage && (
+              <div>
+                <small className="text-red-500 text-center">
+                  {errorMessage}
+                </small>
+              </div>
             )}
           </div>
 
