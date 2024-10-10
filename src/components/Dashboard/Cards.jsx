@@ -1,16 +1,21 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Layout from "../layout";
 import PropTypes from "prop-types";
-import { getStockOrdersFunction } from "../../Services/Apis";
+import {
+  getProductsFunction,
+  getStockOrdersFunction,
+} from "../../Services/Apis";
 import Loading from "../common/Loading";
 import { Link } from "react-router-dom";
 import CardsGrid from "./CardsGrid";
 import DateSelector from "./DateSelector";
 import { format } from "date-fns";
 import StockTable from "./StockTable";
+import * as XLSX from "xlsx";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([]);
   const [data, setData] = useState({
     totalOrders: 0,
     totalProcessingOrders: 0,
@@ -116,9 +121,73 @@ const Dashboard = () => {
     }
   };
 
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await getProductsFunction(categoryName);
+      if (response.status === 200) {
+        setProducts(response?.data?.products || []);
+      }
+    } catch (error) {
+      console.error("Error fetching Products:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [categoryName]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleDownloadExcel = () => {
+    const formattedData = products.map((product) => {
+      let vendorDetails = "No vendor details";
+      if (product.vendorDetails && product.vendorDetails.length > 0) {
+        vendorDetails = product.vendorDetails
+          .map((vendor) => {
+            const details = [];
+            if (vendor.name) details.push(`Vendor Name: ${vendor.name}`);
+            if (vendor.landingCost)
+              details.push(`Landing Cost: ${vendor.landingCost}`);
+            if (vendor.contact) details.push(`Contact: ${vendor.contact}`);
+            if (vendor.address) details.push(`Address: ${vendor.address}`);
+            if (vendor.city) details.push(`City: ${vendor.city}`);
+            if (vendor.batchNumber)
+              details.push(`Batch Number: ${vendor.batchNumber}`);
+            if (vendor.gst) details.push(`GST: ${vendor.gst}`);
+            if (vendor.igst) details.push(`IGST: ${vendor.igst}`);
+
+            return details.join(", ");
+          })
+          .join("\n");
+      }
+
+      return {
+        ProductName: product.inventoryProductName,
+        Description: product.inventoryProductDescription,
+        Category: product.inventoryCategory?.inventoryCategoryName,
+        Quantity: product.inventoryProductQuantity,
+        Unit: product.inventoryProductUnit?.inventoryUnitName,
+        SKU: product.inventoryProductSKUCode,
+        CostPrice: product.inventoryCostPrice,
+        SellingPrice: product.inventorySellingPrice,
+        GSTPercent: product.gstPercent,
+        GSTAmount: product.gstAmount,
+        VendorDetails: vendorDetails,
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Products");
+
+    XLSX.writeFile(workbook, "Products_Report.xlsx");
+  };
 
   return (
     <Layout>
@@ -136,13 +205,22 @@ const Dashboard = () => {
           )}
         </div>
 
-        <DateSelector
-          fromDate={fromDate}
-          setFromDate={setFromDate}
-          toDate={toDate}
-          setToDate={setToDate}
-          getStocksReport={getStocksReport}
-        />
+        <div className="flex items-end justify-between">
+          <DateSelector
+            fromDate={fromDate}
+            setFromDate={setFromDate}
+            toDate={toDate}
+            setToDate={setToDate}
+            getStocksReport={getStocksReport}
+          />
+
+          <button
+            onClick={handleDownloadExcel}
+            className="p-2 text-white bg-blue-500 rounded-md h-fit"
+          >
+            Download Products Details In Excel
+          </button>
+        </div>
 
         <div className="gap-10 mt-10 bg-white md:flex">
           <div className="w-full">
