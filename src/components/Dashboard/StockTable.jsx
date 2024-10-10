@@ -13,11 +13,11 @@ export default function StockTable({ stockReport }) {
       <table className="min-w-full table-auto">
         <thead>
           <tr>
-            <th className="px-4 py-2 border text-left">Date</th>
-            <th className="px-4 py-2 border text-left">Product Name</th>
-            <th className="px-4 py-2 border text-left">In Quantity</th>
-            <th className="px-4 py-2 border text-left">Out Quantity</th>
-            <th className="px-4 py-2 border text-left">Returned Quantity</th>
+            <th className="px-4 py-2 text-left border">Date</th>
+            <th className="px-4 py-2 text-left border">Product Name</th>
+            <th className="px-4 py-2 text-left border">In Quantity</th>
+            <th className="px-4 py-2 text-left border">Out Quantity</th>
+            <th className="px-4 py-2 text-left border">Returned Quantity</th>
           </tr>
         </thead>
         <tbody>
@@ -34,13 +34,13 @@ export default function StockTable({ stockReport }) {
                 </td>
                 <td className="px-4 py-2 border">{value.productName}</td>
                 <td className="px-4 py-2 border">
-                  {safeValue(value.inQuantity)}
+                  {safeValue(value.inQuantity).toFixed(2)}
                 </td>
                 <td className="px-4 py-2 border">
-                  {safeValue(value.outQuantity)}
+                  {safeValue(value.outQuantity).toFixed(2)}
                 </td>
                 <td className="px-4 py-2 border">
-                  {safeValue(value.returnQuantities)}
+                  {safeValue(value.returnQuantities).toFixed(2)}
                 </td>
               </tr>
             ))}
