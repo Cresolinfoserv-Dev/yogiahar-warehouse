@@ -25,7 +25,8 @@ export default function StockTable({ stockReport }) {
             .filter(
               ([, value]) =>
                 safeValue(value.inQuantity) !== 0 ||
-                safeValue(value.outQuantity) !== 0
+                safeValue(value.outQuantity) !== 0 ||
+                safeValue(value.returnQuantities) !== 0 // Include return quantities in filter
             )
             .map(([, value]) => (
               <tr key={value.productName}>
