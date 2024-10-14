@@ -218,7 +218,7 @@ export default function EditVendorDetails({
                     htmlFor="gst"
                     className="block text-sm font-medium text-gray-600"
                   >
-                    GST
+                    GST Number
                   </label>
                   <input
                     type="text"
@@ -247,7 +247,7 @@ export default function EditVendorDetails({
                     htmlFor="igst"
                     className="block text-sm font-medium text-gray-600"
                   >
-                    IGST
+                    IGST Number
                   </label>
                   <input
                     type="text"
