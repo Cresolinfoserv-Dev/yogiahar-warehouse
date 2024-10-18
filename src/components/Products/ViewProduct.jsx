@@ -7,7 +7,6 @@ import BackButton from "../common/BackButton";
 import AddVendorDetails from "./AddVendorDetails";
 import { FiEdit } from "react-icons/fi";
 import EditVendorDetails from "./EditVendorDetails";
-import { format } from "date-fns";
 
 export default function ViewProduct() {
   const [data, setData] = useState(null);
@@ -17,13 +16,22 @@ export default function ViewProduct() {
   const [modalEditVendor, setModalEditVendor] = useState(false);
   const [vendorId, setVendorId] = useState("");
 
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   const getSingleDetails = async () => {
     try {
       const response = await singleProductGetFunction(id);
       if (response.status === 200) {
         setData(response.data?.product);
-      } else {
-        console.error("Error fetching product details:", response.statusText);
       }
     } catch (error) {
       console.error("Error fetching product details:", error.message);
@@ -113,22 +121,25 @@ export default function ViewProduct() {
                       <div className="pb-4 flex gap-5" key={item._id}>
                         <div>
                           {item.name && <p>Vendor Name: {item.name}</p>}
-
                           {item.landingCost && (
                             <p>Landing Cost: {item.landingCost}</p>
                           )}
-
                           {item.contact && <p>Contact: {item.contact}</p>}
-
                           {item.address && <p>Address: {item.address}</p>}
-
                           {item.city && <p>City: {item.city}</p>}
-
                           {item.batchNumber && (
                             <p>Batch Number: {item.batchNumber}</p>
                           )}
+                          {item.manufacturedDate && (
+                            <p>
+                              Manufactured Date:{" "}
+                              {formatDate(item.manufacturedDate)}
+                            </p>
+                          )}
+                          {item.expiryDate && (
+                            <p>Expiry Date: {formatDate(item.expiryDate)}</p>
+                          )}
                           {item.gst && <p>GST: {item.gst}</p>}
-
                           {item.igst && <p>IGST: {item.igst}</p>}
                         </div>
 

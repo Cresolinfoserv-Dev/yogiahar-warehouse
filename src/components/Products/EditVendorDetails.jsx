@@ -19,7 +19,6 @@ export default function EditVendorDetails({
     reset,
   } = useForm();
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const authToken = sessionStorage.getItem("adminToken");
 
   const notifySuccess = (toastMessage) => {
@@ -63,6 +62,8 @@ export default function EditVendorDetails({
           gst: vendor.gst,
           igst: vendor.igst,
           batchNumber: vendor.batchNumber,
+          manufacturedDate: vendor.manufacturedDate,
+          expiryDate: vendor.expiryDate,
         });
       }
     }
@@ -86,7 +87,6 @@ export default function EditVendorDetails({
         setLoading(false);
         getSingleDetails();
       } else if (response.response.status === 422) {
-        setErrorMessage(response.response.data.message);
         setLoading(false);
       }
     } catch (error) {
