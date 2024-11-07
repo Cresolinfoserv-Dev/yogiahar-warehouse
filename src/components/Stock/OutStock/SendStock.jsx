@@ -1,5 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { sendStockFunction } from "../../../Services/Apis";
+import {
+  getBoutiqueEmployeesFunction,
+  getCafeEmployeesFunction,
+  sendStockFunction,
+} from "../../../Services/Apis";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -8,8 +12,44 @@ import { useSocket } from "../../../Context/SocketProvider";
 const SendStock = ({ showModal, setShowModal, fetchProducts }) => {
   const [loading, setLoading] = useState(false);
   const [stockData, setStockData] = useState([]);
+  const [selectedBoutique, setSelectedBoutique] = useState("");
+  const [selectedCafe, setSelectedCafe] = useState("");
   const categoryName = sessionStorage.getItem("role");
   const socket = useSocket();
+  const [boutiqueData, setBoutiqueData] = useState([]);
+  const [cafeData, setCafeData] = useState([]);
+
+  const fetchBoutiqueEmployees = async () => {
+    setLoading(true);
+    try {
+      const response = await getBoutiqueEmployeesFunction();
+      if (response.status === 200) {
+        setLoading(false);
+        setBoutiqueData(response?.data?.boutiques);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching boutique employees:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCafeEmployees = async () => {
+    setLoading(true);
+    try {
+      const response = await getCafeEmployeesFunction();
+      if (response.status === 200) {
+        setLoading(false);
+        setCafeData(response?.data?.cafe);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching boutique employees:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAction = useCallback(
     (action) => {
@@ -26,6 +66,8 @@ const SendStock = ({ showModal, setShowModal, fetchProducts }) => {
     if (roleData.includes(secondRole)) {
       setStockData(storedStock);
     }
+    fetchBoutiqueEmployees();
+    fetchCafeEmployees();
   }, [showModal]);
 
   const handleDeleteStock = (index) => {
@@ -35,6 +77,16 @@ const SendStock = ({ showModal, setShowModal, fetchProducts }) => {
   };
 
   const handleSubmit = async () => {
+    if (categoryName === "Boutique" && !selectedBoutique) {
+      toast.error("please select boutique");
+      return;
+    }
+
+    if (categoryName === "Cafe" && !selectedCafe) {
+      toast.error("please select cafe");
+      return;
+    }
+
     setLoading(true);
     const sentTo =
       categoryName === "Boutique"
@@ -49,10 +101,25 @@ const SendStock = ({ showModal, setShowModal, fetchProducts }) => {
         sentTo,
         type: categoryName,
         stockType: "Out",
+        store:
+          categoryName === "Boutique"
+            ? selectedBoutique
+            : categoryName === "Cafe"
+            ? selectedCafe
+            : "",
       });
 
       if (response.status === 200) {
-        handleAction({ orderId: response?.data?.orderID, role: sentTo });
+        handleAction({
+          orderId: response?.data?.orderID,
+          role: sentTo,
+          store:
+            categoryName === "Boutique"
+              ? selectedBoutique
+              : categoryName === "Cafe"
+              ? selectedCafe
+              : "",
+        });
         toast.success("Stock updated successfully");
         localStorage.removeItem("stock");
         fetchProducts();
@@ -102,6 +169,55 @@ const SendStock = ({ showModal, setShowModal, fetchProducts }) => {
                     </div>
                   ))}
                 </div>
+
+                {categoryName === "Boutique" && (
+                  <div className="mt-4">
+                    <label
+                      htmlFor="boutique"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Select Boutique:
+                    </label>
+                    <select
+                      id="boutique"
+                      value={selectedBoutique}
+                      onChange={(e) => setSelectedBoutique(e.target.value)}
+                      className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="">Select a boutique</option>
+                      {boutiqueData.map((boutique) => (
+                        <option key={boutique._id} value={boutique.storeType}>
+                          {boutique.storeType}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {categoryName === "Cafe" && (
+                  <div className="mt-4">
+                    <label
+                      htmlFor="cafe"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Select Cafe:
+                    </label>
+                    <select
+                      id="cafe"
+                      value={selectedCafe}
+                      onChange={(e) => setSelectedCafe(e.target.value)}
+                      className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="">Select a Cafe</option>
+                      {cafeData.map((cafe) => (
+                        <option key={cafe._id} value={cafe.storeType}>
+                          {cafe.storeType}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 <div className="flex space-x-4 mt-4">
                   <button
                     onClick={handleSubmit}

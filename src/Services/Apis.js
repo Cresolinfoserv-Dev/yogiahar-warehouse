@@ -237,3 +237,15 @@ export const changeOrderStatusByID = async (id, data, header) => {
     header
   );
 };
+
+// Get Boutique Employees
+
+export const getBoutiqueEmployeesFunction = async (data) => {
+  return await commonRequest("GET", `${BASE_URL}/boutique/owners`, data);
+};
+
+// Get Cafe Employees
+
+export const getCafeEmployeesFunction = async (data) => {
+  return await commonRequest("GET", `${BASE_URL}/cafe/owners`, data);
+};
