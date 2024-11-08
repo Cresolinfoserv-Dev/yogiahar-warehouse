@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import Layout from "../layout";
 import PropTypes from "prop-types";
 import {
+  getBoutiqueEmployeesFunction,
+  getCafeEmployeesFunction,
   getProductsFunction,
   getStockOrdersFunction,
 } from "../../Services/Apis";
@@ -27,6 +29,41 @@ const Dashboard = () => {
   const categoryName = sessionStorage.getItem("role");
   const [stockReport, setStockReport] = useState(new Map());
   const [allOrders, setAllOrders] = useState([]);
+  const [boutiqueData, setBoutiqueData] = useState([]);
+  const [cafeData, setCafeData] = useState([]);
+  const [selectedStore, setSelectedStore] = useState("");
+
+  const fetchBoutiqueEmployees = async () => {
+    setLoading(true);
+    try {
+      const response = await getBoutiqueEmployeesFunction();
+      if (response.status === 200) {
+        setLoading(false);
+        setBoutiqueData(response?.data?.boutiques);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching boutique employees:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCafeEmployees = async () => {
+    setLoading(true);
+    try {
+      const response = await getCafeEmployeesFunction();
+      if (response.status === 200) {
+        setLoading(false);
+        setCafeData(response?.data?.cafe);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching boutique employees:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchData = async () => {
     const dataToUpdate = {
@@ -121,6 +158,58 @@ const Dashboard = () => {
     }
   };
 
+  const handleStoreChange = async (event) => {
+    const storeName = event.target.value;
+    setSelectedStore(storeName);
+
+    try {
+      const response = await getStockOrdersFunction(categoryName, {
+        storeName,
+      });
+      if (response.status === 200) {
+        setAllOrders(response.data.allOrders);
+      }
+    } catch (error) {
+      console.error("Error fetching filtered orders:", error);
+    }
+  };
+
+  const handleStoreDownloadExcel = (selectedStore) => {
+    const filteredStoreOrders = allOrders.filter(
+      (order) => order.store === selectedStore
+    );
+
+    const formattedData = [];
+    filteredStoreOrders.forEach((order) => {
+      order.products.forEach((product) => {
+        const productName = product.productID.inventoryProductName;
+        const sendQuantity = parseFloat(product.sendQuantity) || 0;
+        const returnQuantity = parseFloat(product.returnQuantity) || 0;
+        const stockType = order.stockType;
+        const orderDate = format(new Date(order.updatedAt), "yyyy-MM-dd");
+
+        let outQuantity = 0;
+        if (stockType === "Out") {
+          outQuantity = sendQuantity - returnQuantity;
+        }
+
+        formattedData.push({
+          Date: orderDate,
+          ProductName: productName,
+          StockType: stockType,
+          InQuantity: stockType === "In" ? sendQuantity : 0,
+          OutQuantity: stockType === "Out" ? outQuantity : 0,
+          ReturnQuantity: stockType === "Returned" ? sendQuantity : 0,
+        });
+      });
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Filtered Orders");
+    XLSX.writeFile(workbook, `${selectedStore}_Orders.xlsx`);
+  };
+
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
@@ -141,6 +230,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData();
+    fetchBoutiqueEmployees();
+    fetchCafeEmployees();
   }, []);
 
   const handleDownloadExcel = () => {
@@ -205,7 +296,7 @@ const Dashboard = () => {
           )}
         </div>
 
-        <div className="flex items-end justify-between">
+        <div className="lg:flex items-end justify-between">
           <DateSelector
             fromDate={fromDate}
             setFromDate={setFromDate}
@@ -214,11 +305,39 @@ const Dashboard = () => {
             getStocksReport={getStocksReport}
           />
 
+          {["Boutique", "Cafe"].includes(categoryName) && (
+            <div className="flex gap-4 items-center lg:my-0 my-5">
+              <div className="">
+                <label htmlFor="storeSelect">Select Store:</label>
+                <select
+                  id="storeSelect"
+                  value={selectedStore}
+                  onChange={handleStoreChange}
+                  className="p-2 border rounded-md ml-2"
+                >
+                  {(categoryName === "Boutique" ? boutiqueData : cafeData).map(
+                    (store) => (
+                      <option key={store._id} value={store.storeType}>
+                        {store.storeType}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
+              <button
+                className="p-2 text-white bg-blue-500 rounded-md h-fit"
+                onClick={() => handleStoreDownloadExcel(selectedStore)}
+              >
+                Download
+              </button>
+            </div>
+          )}
+
           <button
             onClick={handleDownloadExcel}
             className="p-2 text-white bg-blue-500 rounded-md h-fit"
           >
-            Download Products Details In Excel
+            Products Details Excel
           </button>
         </div>
 

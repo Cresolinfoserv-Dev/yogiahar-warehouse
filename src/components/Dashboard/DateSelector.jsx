@@ -56,7 +56,7 @@ export default function DateSelector({
       </div>
       <button
         onClick={getStocksReport}
-        className="self-end px-4 py-2 text-white bg-blue-500 rounded h-fit"
+        className="lg:self-end self-start px-4 py-2  text-white bg-blue-500 rounded h-fit"
       >
         Submit
       </button>
