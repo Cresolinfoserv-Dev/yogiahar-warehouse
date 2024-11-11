@@ -179,7 +179,8 @@ const Dashboard = () => {
       (order) => order.store === selectedStore
     );
 
-    const formattedData = [];
+    const productMap = {};
+
     filteredStoreOrders.forEach((order) => {
       order.products.forEach((product) => {
         const productName = product.productID.inventoryProductName;
@@ -193,14 +194,22 @@ const Dashboard = () => {
           outQuantity = sendQuantity - returnQuantity;
         }
 
-        formattedData.push({
-          Date: orderDate,
-          ProductName: productName,
-          StockType: stockType,
-          OutQuantity: stockType === "Out" ? outQuantity : 0,
-        });
+        const key = `${productName}-${orderDate}`;
+
+        if (productMap[key]) {
+          productMap[key].OutQuantity += outQuantity;
+        } else {
+          productMap[key] = {
+            Date: orderDate,
+            ProductName: productName,
+            StockType: stockType,
+            OutQuantity: outQuantity,
+          };
+        }
       });
     });
+
+    const formattedData = Object.values(productMap);
 
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();

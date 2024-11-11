@@ -69,6 +69,14 @@ export const createProductsFunction = async (data, header) => {
     header
   );
 };
+export const createBilkProductsFunction = async (data, header) => {
+  return await commonRequest(
+    "POST",
+    `${BASE_URL}/inventory/product/bulk/add`,
+    data,
+    header
+  );
+};
 
 // Create vendor details Function
 
