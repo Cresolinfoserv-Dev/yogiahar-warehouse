@@ -88,6 +88,7 @@ export default function GetQuantity() {
         <td className="px-4 py-3">
           {(currentPage - 1) * recordsPerPage + index + 1}
         </td>
+        <td className="px-4 py-3">{row?._id}</td>
         <td className="px-4 py-3 uppercase">{row.inventoryUnitName}</td>
         <td className="px-4 py-3">
           <Link to={`/update-quantity/${row._id}`}>
@@ -122,6 +123,7 @@ export default function GetQuantity() {
                   <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
                       <th className="px-4 py-3 w-20">ID</th>
+                      <th className="px-4 py-3 w-20">Unit ID</th>
                       <th className="px-4 py-3 w-20">Units Name</th>
                       <th className="px-4 py-3 w-20">Actions</th>
                     </tr>

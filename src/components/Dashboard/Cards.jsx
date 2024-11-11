@@ -197,9 +197,7 @@ const Dashboard = () => {
           Date: orderDate,
           ProductName: productName,
           StockType: stockType,
-          InQuantity: stockType === "In" ? sendQuantity : 0,
           OutQuantity: stockType === "Out" ? outQuantity : 0,
-          ReturnQuantity: stockType === "Returned" ? sendQuantity : 0,
         });
       });
     });
@@ -282,7 +280,7 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      <div className="px-2 2xl:px-28 xl:px-16">
+      <div className="px-2 2xl:px-28 xl:px-16 space-y-8">
         <div className="grid grid-cols-1 gap-4 mt-2 sm:grid-cols-2 lg:grid-cols-4 md:mt-8">
           {loading ? (
             <Loading />
@@ -296,7 +294,7 @@ const Dashboard = () => {
           )}
         </div>
 
-        <div className="lg:flex items-end justify-between">
+        <div className="xl:flex items-end justify-between ">
           <DateSelector
             fromDate={fromDate}
             setFromDate={setFromDate}
@@ -306,7 +304,7 @@ const Dashboard = () => {
           />
 
           {["Boutique", "Cafe"].includes(categoryName) && (
-            <div className="flex gap-4 items-center lg:my-0 my-5">
+            <div className="flex gap-4 items-center xl:my-0 my-5">
               <div className="">
                 <label htmlFor="storeSelect">Select Store:</label>
                 <select
@@ -315,6 +313,7 @@ const Dashboard = () => {
                   onChange={handleStoreChange}
                   className="p-2 border rounded-md ml-2"
                 >
+                  <option>Select</option>
                   {(categoryName === "Boutique" ? boutiqueData : cafeData).map(
                     (store) => (
                       <option key={store._id} value={store.storeType}>
@@ -332,7 +331,8 @@ const Dashboard = () => {
               </button>
             </div>
           )}
-
+        </div>
+        <div>
           <button
             onClick={handleDownloadExcel}
             className="p-2 text-white bg-blue-500 rounded-md h-fit"

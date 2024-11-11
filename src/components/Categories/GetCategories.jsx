@@ -63,6 +63,7 @@ export default function GetCategories() {
   const columns = useMemo(
     () => [
       { name: "ID", width: "100px" },
+      { name: "Category ID", width: "100px" },
       { name: "Category Name", width: "300px" },
       { name: "Category Image", width: "150px" },
       {
@@ -106,6 +107,7 @@ export default function GetCategories() {
                     {records?.map((category, index) => (
                       <tr key={category._id} className="border-b">
                         <td className="px-4 py-3">{index + 1 + firstIndex}</td>
+                        <td className="px-4 py-3">{category?._id}</td>
                         <td className="px-4 py-3 font-medium">
                           {category?.inventoryCategoryName}
                         </td>
