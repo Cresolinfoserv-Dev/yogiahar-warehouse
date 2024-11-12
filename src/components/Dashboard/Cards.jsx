@@ -175,46 +175,76 @@ const Dashboard = () => {
   };
 
   const handleStoreDownloadExcel = (selectedStore) => {
-    const filteredStoreOrders = allOrders.filter(
-      (order) => order.store === selectedStore
-    );
-
     const productMap = {};
+    const allStoreTypes = new Set();
+
+    const filteredStoreOrders =
+      selectedStore === "All"
+        ? allOrders
+        : allOrders.filter((order) => order.store === selectedStore);
 
     filteredStoreOrders.forEach((order) => {
+      const storeType = order.store;
+      allStoreTypes.add(storeType);
+
       order.products.forEach((product) => {
         const productName = product.productID.inventoryProductName;
         const sendQuantity = parseFloat(product.sendQuantity) || 0;
         const returnQuantity = parseFloat(product.returnQuantity) || 0;
         const stockType = order.stockType;
-        const orderDate = format(new Date(order.updatedAt), "yyyy-MM-dd");
+        const productCode = product.productID.inventoryProductSKUCode;
 
         let outQuantity = 0;
         if (stockType === "Out") {
           outQuantity = sendQuantity - returnQuantity;
         }
 
-        const key = `${productName}-${orderDate}`;
+        outQuantity = parseFloat(outQuantity.toFixed(2));
 
-        if (productMap[key]) {
-          productMap[key].OutQuantity += outQuantity;
-        } else {
-          productMap[key] = {
-            Date: orderDate,
+        if (!productMap[productName]) {
+          productMap[productName] = {
             ProductName: productName,
-            StockType: stockType,
-            OutQuantity: outQuantity,
+            ProductCode: productCode,
+            stores: {},
+            Total: 0,
           };
         }
+
+        productMap[productName].stores[storeType] =
+          (productMap[productName].stores[storeType] || 0) + outQuantity;
+
+        productMap[productName].Total += outQuantity;
+        productMap[productName].Total = parseFloat(
+          productMap[productName].Total.toFixed(2)
+        );
       });
     });
 
-    const formattedData = Object.values(productMap);
+    const formattedData = [];
+    Object.keys(productMap).forEach((productName) => {
+      const productData = productMap[productName];
+      const row = {
+        ProductName: productData.ProductName,
+        ProductCode: productData.ProductCode,
+      };
+
+      allStoreTypes.forEach((storeType) => {
+        row[storeType] = productData.stores[storeType] || 0;
+      });
+
+      row.Total = productData.Total;
+
+      formattedData.push(row);
+    });
 
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Filtered Orders");
-    XLSX.writeFile(workbook, `${selectedStore}_Orders.xlsx`);
+    XLSX.utils.book_append_sheet(workbook, worksheet, "All Store Orders");
+
+    XLSX.writeFile(
+      workbook,
+      `${selectedStore === "All" ? "All" : selectedStore}_Store_Orders.xlsx`
+    );
   };
 
   const fetchProducts = useCallback(async () => {
@@ -323,6 +353,7 @@ const Dashboard = () => {
                   className="p-2 border rounded-md ml-2"
                 >
                   <option>Select</option>
+                  <option>All</option>
                   {(categoryName === "Boutique" ? boutiqueData : cafeData).map(
                     (store) => (
                       <option key={store._id} value={store.storeType}>

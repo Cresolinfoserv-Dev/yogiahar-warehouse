@@ -16,6 +16,7 @@ export default function InStock() {
   const [productId, setProductId] = useState("");
   const categoryName = sessionStorage.getItem("role");
   const [stock, setStock] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -40,15 +41,42 @@ export default function InStock() {
     setModalVisible(true);
   };
 
+  const handleClickGetStock = () => {
+    if (stock?.product?.length > 0) {
+      setModalVisibleGetStock(true);
+    } else {
+      console.error("No stock available to send");
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const filteredData = useMemo(() => {
+    return data.filter((product) =>
+      searchTerm
+        ? product.inventoryProductName
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          product.inventoryProductSKUCode
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase())
+        : true
+    );
+  }, [data, searchTerm]);
+
   const npage = useMemo(
-    () => Math.ceil(data.length / rowsPerPage),
-    [data.length, rowsPerPage]
+    () => Math.ceil(filteredData.length / rowsPerPage),
+    [filteredData.length, rowsPerPage]
   );
+
   const records = useMemo(() => {
     const lastIndex = currentPage * rowsPerPage;
     const firstIndex = lastIndex - rowsPerPage;
-    return data.slice(firstIndex, lastIndex);
-  }, [data, currentPage, rowsPerPage]);
+    return filteredData.slice(firstIndex, lastIndex);
+  }, [filteredData, currentPage, rowsPerPage]);
 
   const changePage = (page) => {
     if (page >= 1 && page <= npage) setCurrentPage(page);
@@ -71,14 +99,6 @@ export default function InStock() {
     }
   }, []);
 
-  const handleClickGetStock = () => {
-    if (stock?.product?.length > 0) {
-      setModalVisibleGetStock(true);
-    } else {
-      console.error("No stock available to send");
-    }
-  };
-
   return (
     <Layout>
       {loading ? (
@@ -87,9 +107,9 @@ export default function InStock() {
         <div className="container px-4 mx-auto mt-4 md:px-8">
           <BreadCrumb pageName="In Stock" />
 
-          <div className="border w-fit mb-7">
+          <div className="border w-fit mb-7 flex items-center gap-4">
             <button
-              onClick={() => handleClickGetStock()}
+              onClick={handleClickGetStock}
               style={{
                 cursor: stock?.product?.length > 0 ? "pointer" : "not-allowed",
               }}
@@ -104,9 +124,16 @@ export default function InStock() {
                 Add Stock
               </h4>
             </button>
+            <input
+              type="text"
+              placeholder="Search Products"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
           </div>
           <div className="p-4 bg-white rounded-lg shadow-md">
-            {data.length === 0 ? (
+            {filteredData.length === 0 ? (
               <div>
                 <h1>No Data Found</h1>
               </div>
@@ -144,7 +171,6 @@ export default function InStock() {
                               className="p-1 w-8 h-8"
                             />
                           )}
-
                           {value.inventoryProductName}
                         </td>
                         <td className="px-4 py-3">
@@ -222,8 +248,10 @@ export default function InStock() {
 
           {modalVisibleGetStock && (
             <GetStockModel
+              stock={stock}
               showModal={modalVisibleGetStock}
               setShowModal={setModalVisibleGetStock}
+              fetchProducts={fetchProducts}
             />
           )}
         </div>
