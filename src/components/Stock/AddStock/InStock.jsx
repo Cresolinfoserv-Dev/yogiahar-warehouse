@@ -85,7 +85,7 @@ export default function InStock() {
   const columns = [
     { name: "ID", width: "100px" },
     { name: "Product Name", width: "300px" },
-    { name: "SKU", width: "150px" },
+    { name: "SKU Code", width: "150px" },
     { name: "Category", width: "150px" },
     { name: "Unit", width: "150px" },
     { name: "Quantity", width: "150px" },
@@ -129,7 +129,7 @@ export default function InStock() {
               placeholder="Search Products"
               value={searchTerm}
               onChange={handleSearchChange}
-              className="px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
           </div>
           <div className="p-4 bg-white rounded-lg shadow-md">

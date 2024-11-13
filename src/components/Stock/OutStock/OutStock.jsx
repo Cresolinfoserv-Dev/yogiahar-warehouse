@@ -56,13 +56,14 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => (
 );
 
 Pagination.propTypes = {
-  currentPage: PropTypes.string.isRequired,
-  totalPages: PropTypes.string.isRequired,
-  onPageChange: PropTypes.string.isRequired,
+  currentPage: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
 };
 
 export default function OutStock() {
   const [data, setData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [quantity, setQuantity] = useState("");
   const [editingRowId, setEditingRowId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -93,17 +94,34 @@ export default function OutStock() {
     fetchProducts();
   }, []);
 
+  const filteredData = useMemo(() => {
+    return data.filter((product) =>
+      searchTerm
+        ? product.inventoryProductName
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          product.inventoryProductSKUCode
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase())
+        : true
+    );
+  }, [data, searchTerm]);
+
   const records = useMemo(() => {
-    if (!Array.isArray(data)) return [];
     const lastIndex = currentPage * recordsPerPage;
     const firstIndex = lastIndex - recordsPerPage;
-    return data.slice(firstIndex, lastIndex);
-  }, [data, currentPage]);
+    return filteredData.slice(firstIndex, lastIndex);
+  }, [filteredData, currentPage]);
 
   const totalPages = useMemo(
-    () => Math.ceil(data.length / recordsPerPage),
-    [data.length]
+    () => Math.ceil(filteredData.length / recordsPerPage),
+    [filteredData.length]
   );
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
 
   const notifySuccess = (toastMessage) =>
     toast.success(toastMessage, {
@@ -170,8 +188,6 @@ export default function OutStock() {
     notifySuccess("Stock data saved successfully!");
   };
 
-  const storedStock = JSON.parse(localStorage.getItem("stock"));
-
   const handleClick = () => {
     setModalVisible(true);
   };
@@ -192,16 +208,16 @@ export default function OutStock() {
         <div className="container px-4 mx-auto mt-4 md:px-8">
           <BreadCrumb pageName="Out Stock" />
 
-          <div className="border w-fit mb-7">
+          <div className="border w-fit mb-4 flex items-center gap-4">
             <button
-              onClick={() => handleClick()}
+              onClick={handleClick}
               style={{
-                cursor: storedStock?.length > 0 ? "pointer" : "not-allowed",
+                cursor: data?.length > 0 ? "pointer" : "not-allowed",
               }}
             >
               <h4
                 className={
-                  storedStock?.length > 0
+                  data?.length > 0
                     ? "p-2 text-center text-white bg-black hover:bg-white hover:text-black hover:duration-500 w-fit"
                     : "p-2 text-center text-gray-400 bg-gray-200 cursor-not-allowed w-fit"
                 }
@@ -209,6 +225,14 @@ export default function OutStock() {
                 Send Stock
               </h4>
             </button>
+
+            <input
+              type="text"
+              placeholder="Search Products"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
           </div>
 
           <div className="p-4 bg-white rounded-lg shadow-md">
@@ -224,7 +248,7 @@ export default function OutStock() {
                       {[
                         "ID",
                         "Product Name",
-                        "SKU",
+                        "SKU Code",
                         "Unit",
                         "Current Quantity",
                         "Category",
@@ -253,57 +277,54 @@ export default function OutStock() {
                               className="p-1 w-8 h-8"
                             />
                           )}
-
                           {value.inventoryProductName}
                         </td>
                         <td className="px-4 py-3">
                           {value.inventoryProductSKUCode}
                         </td>
                         <td className="px-4 py-3">
-                          {value.inventoryProductUnit.inventoryUnitName}
+                          {value.inventoryProductUnit?.inventoryUnitName || ""}
                         </td>
-                        <td className="px-4 py-3 text-green-500">
+                        <td className="px-4 py-3">
                           {value.inventoryProductQuantity}
                         </td>
                         <td className="px-4 py-3">
-                          {value.inventoryCategory?.inventoryCategoryName}
+                          {value.inventoryProductCategoryName}
                         </td>
                         <td className="px-4 py-3">
                           {editingRowId === value._id ? (
-                            <div className="mt-2 mb-2 space-y-2">
+                            <div className="flex items-center space-x-2">
                               <input
                                 type="number"
-                                step="0.01"
-                                placeholder="Enter quantity"
                                 value={quantity}
-                                onWheel={numberInputOnWheelPreventChange}
+                                min="0.1"
+                                step="0.01"
                                 onChange={handleQuantityChange}
-                                className="p-2 border"
+                                onWheel={numberInputOnWheelPreventChange}
+                                className="p-2 border rounded-md"
                               />
-                              <div className="flex space-x-2">
-                                <button
-                                  onClick={() => handleAddStock(value)}
-                                  className="p-2 text-white bg-black hover:bg-white hover:text-black hover:duration-500"
-                                >
-                                  Save
-                                </button>
-                                <button
-                                  onClick={() => setEditingRowId(null)}
-                                  className="p-2 text-white bg-red-500 hover:bg-white hover:text-red-500 hover:duration-500"
-                                >
-                                  Cancel
-                                </button>
-                              </div>
+                              <button
+                                onClick={() => handleAddStock(value)}
+                                className="px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600 transition"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => setEditingRowId(null)}
+                                className="px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 transition"
+                              >
+                                Cancel
+                              </button>
                             </div>
                           ) : (
                             <button
                               onClick={() => {
-                                setProductId(value._id);
                                 setEditingRowId(value._id);
+                                setProductId(value._id);
                               }}
-                              className="p-2 text-center text-white bg-black hover:bg-white hover:text-black hover:duration-500 w-fit"
+                              className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 transition"
                             >
-                              Out Stock
+                              Add Stock
                             </button>
                           )}
                         </td>
@@ -319,17 +340,10 @@ export default function OutStock() {
               </>
             )}
           </div>
+          <ToastContainer />
         </div>
       )}
-
-      {modalVisible && (
-        <SendStock
-          showModal={modalVisible}
-          setShowModal={setModalVisible}
-          fetchProducts={fetchProducts}
-        />
-      )}
-      <ToastContainer />
+      <SendStock isVisible={modalVisible} setIsVisible={setModalVisible} />
     </Layout>
   );
 }

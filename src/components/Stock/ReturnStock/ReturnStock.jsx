@@ -9,10 +9,12 @@ import ReturnStockMaintain from "./ReturnStockMaintain";
 
 export default function ReturnStock() {
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [quantity, setQuantity] = useState("");
   const [editingRowId, setEditingRowId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const categoryName = useMemo(() => sessionStorage.getItem("role"), []);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 20;
@@ -24,12 +26,15 @@ export default function ReturnStock() {
       const response = await getProductsFunction(categoryName);
       if (response.status === 200 && response?.data?.products) {
         setData(response?.data?.products);
+        setFilteredData(response?.data?.products);
       } else {
         setData([]);
+        setFilteredData([]);
       }
     } catch (error) {
       console.error("Error fetching Products:", error);
       setData([]);
+      setFilteredData([]);
     } finally {
       setLoading(false);
     }
@@ -39,6 +44,19 @@ export default function ReturnStock() {
     fetchProducts();
   }, [categoryName]);
 
+  const handleSearch = (e) => {
+    const keyword = e.target.value.toLowerCase();
+    setSearchTerm(keyword);
+    setFilteredData(
+      data.filter(
+        (item) =>
+          item.inventoryProductName.toLowerCase().includes(keyword) ||
+          item.inventoryProductSKUCode.toLowerCase().includes(keyword)
+      )
+    );
+    setCurrentPage(1);
+  };
+
   const handleCancelEdit = () => {
     setQuantity("");
     setEditingRowId(null);
@@ -47,7 +65,6 @@ export default function ReturnStock() {
   const handleQuantityChange = (e) => {
     const value = e.target.value;
     const validValue = value.match(/^\d*(\.\d{0,2})?$/);
-
     if (validValue) {
       setQuantity(value);
     }
@@ -70,7 +87,6 @@ export default function ReturnStock() {
     }
 
     const availableStock = parseFloat(inventoryProductQuantity);
-
     if (enteredQuantity > availableStock) {
       notifyError("Insufficient stock available.");
       return;
@@ -127,7 +143,6 @@ export default function ReturnStock() {
               className="p-1 w-8 h-8"
             />
           )}
-
           <p>{row.inventoryProductName}</p>
         </div>
       ),
@@ -224,10 +239,10 @@ export default function ReturnStock() {
   const paginatedData = useMemo(() => {
     const lastIndex = currentPage * rowsPerPage;
     const firstIndex = lastIndex - rowsPerPage;
-    return data.slice(firstIndex, lastIndex);
-  }, [data, currentPage, rowsPerPage]);
+    return filteredData.slice(firstIndex, lastIndex);
+  }, [filteredData, currentPage, rowsPerPage]);
 
-  const totalPages = Math.ceil(data.length / rowsPerPage);
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
   return (
     <Layout>
@@ -236,8 +251,8 @@ export default function ReturnStock() {
       ) : (
         <div className="container px-4 mx-auto mt-4 md:px-8">
           <BreadCrumb pageName="Return Stock" />
-          <div className="border w-fit mb-7">
-            <div
+          <div className="border w-fit mb-4 flex items-center gap-4">
+            <button
               onClick={
                 storedStock?.length > 0
                   ? () => setModalVisible(true)
@@ -256,10 +271,19 @@ export default function ReturnStock() {
               >
                 Return Stock
               </h4>
-            </div>
+            </button>
+
+            <input
+              type="text"
+              placeholder="Search by product name or SKU..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
           </div>
+
           <div className="p-4 bg-white rounded-lg shadow-md">
-            {data.length === 0 ? (
+            {filteredData.length === 0 ? (
               <h1>No Data Found</h1>
             ) : (
               <>
@@ -281,71 +305,41 @@ export default function ReturnStock() {
                       >
                         {columns?.map((col, i) => (
                           <td key={i} className="px-4 py-3 w-20">
-                            {typeof col?.selector === "function"
-                              ? col.selector(row, id)
-                              : null}
+                            {col.selector(row, id)}
                           </td>
                         ))}
                       </tr>
                     ))}
                   </tbody>
                 </table>
-                <nav>
-                  <ul className="flex justify-center space-x-2 my-4">
-                    <li>
-                      <button
-                        onClick={() =>
-                          setCurrentPage((prev) => Math.max(prev - 1, 1))
-                        }
-                        className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition disabled:opacity-50"
-                        disabled={currentPage === 1}
-                      >
-                        Prev
-                      </button>
-                    </li>
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                      (pageNum) => (
-                        <li key={pageNum}>
-                          <button
-                            onClick={() => setCurrentPage(pageNum)}
-                            className={`px-4 py-2 rounded-md transition ${
-                              currentPage === pageNum
-                                ? "bg-blue-500 text-white"
-                                : "bg-gray-200 hover:bg-gray-300"
-                            }`}
-                          >
-                            {pageNum}
-                          </button>
-                        </li>
-                      )
-                    )}
-                    <li>
-                      <button
-                        onClick={() =>
-                          setCurrentPage((prev) =>
-                            Math.min(prev + 1, totalPages)
-                          )
-                        }
-                        className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition disabled:opacity-50"
-                        disabled={currentPage === totalPages}
-                      >
-                        Next
-                      </button>
-                    </li>
-                  </ul>
-                </nav>
+                {filteredData.length > rowsPerPage && (
+                  <div className="flex justify-center mt-4">
+                    <button
+                      onClick={() => setCurrentPage((prev) => prev - 1)}
+                      disabled={currentPage === 1}
+                      className="px-4 py-2 mx-1 text-white bg-black rounded disabled:opacity-50"
+                    >
+                      Previous
+                    </button>
+                    <span className="px-4 py-2 mx-1">{`Page ${currentPage} of ${totalPages}`}</span>
+                    <button
+                      onClick={() => setCurrentPage((prev) => prev + 1)}
+                      disabled={currentPage === totalPages}
+                      className="px-4 py-2 mx-1 text-white bg-black rounded disabled:opacity-50"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </div>
-          {modalVisible && (
-            <ReturnStockMaintain
-              setModalVisible={setModalVisible}
-              fetchProducts={fetchProducts}
-            />
-          )}
-          <ToastContainer />
         </div>
       )}
+      {modalVisible && (
+        <ReturnStockMaintain onClose={() => setModalVisible(false)} />
+      )}
+      <ToastContainer />
     </Layout>
   );
 }
