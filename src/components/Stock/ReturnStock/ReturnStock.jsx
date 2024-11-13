@@ -337,7 +337,10 @@ export default function ReturnStock() {
         </div>
       )}
       {modalVisible && (
-        <ReturnStockMaintain onClose={() => setModalVisible(false)} />
+        <ReturnStockMaintain
+          setModalVisible={setModalVisible}
+          fetchProducts={fetchProducts}
+        />
       )}
       <ToastContainer />
     </Layout>

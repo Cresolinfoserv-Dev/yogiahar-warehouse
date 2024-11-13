@@ -101,7 +101,7 @@ export default function ProcessingOrders() {
       selector: (row) => (
         <p className="uppercase">
           {" "}
-          {row.sentTo === "" ? "In Stock" : row.sentTo}
+          {row.store === "" ? "In Stock" : row.store}
         </p>
       ),
     },

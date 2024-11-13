@@ -200,6 +200,8 @@ export default function OutStock() {
     }, 0);
   };
 
+  const storedStock = JSON.parse(localStorage.getItem("stock"));
+
   return (
     <Layout>
       {loading ? (
@@ -212,12 +214,12 @@ export default function OutStock() {
             <button
               onClick={handleClick}
               style={{
-                cursor: data?.length > 0 ? "pointer" : "not-allowed",
+                cursor: storedStock?.length > 0 ? "pointer" : "not-allowed",
               }}
             >
               <h4
                 className={
-                  data?.length > 0
+                  storedStock?.length > 0
                     ? "p-2 text-center text-white bg-black hover:bg-white hover:text-black hover:duration-500 w-fit"
                     : "p-2 text-center text-gray-400 bg-gray-200 cursor-not-allowed w-fit"
                 }
@@ -250,8 +252,8 @@ export default function OutStock() {
                         "Product Name",
                         "SKU Code",
                         "Unit",
-                        "Current Quantity",
                         "Category",
+                        "Current Quantity",
                         "Actions",
                       ].map((col) => (
                         <th key={col} scope="col" className="px-4 py-3">
@@ -286,14 +288,14 @@ export default function OutStock() {
                           {value.inventoryProductUnit?.inventoryUnitName || ""}
                         </td>
                         <td className="px-4 py-3">
+                          {value.inventoryCategory?.inventoryCategoryName}
+                        </td>
+                        <td className="px-4 py-3 text-green-500">
                           {value.inventoryProductQuantity}
                         </td>
                         <td className="px-4 py-3">
-                          {value.inventoryProductCategoryName}
-                        </td>
-                        <td className="px-4 py-3">
                           {editingRowId === value._id ? (
-                            <div className="flex items-center space-x-2">
+                            <div className="mt-2 mb-2 space-y-2">
                               <input
                                 type="number"
                                 value={quantity}
@@ -303,18 +305,20 @@ export default function OutStock() {
                                 onWheel={numberInputOnWheelPreventChange}
                                 className="p-2 border rounded-md"
                               />
-                              <button
-                                onClick={() => handleAddStock(value)}
-                                className="px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600 transition"
-                              >
-                                Save
-                              </button>
-                              <button
-                                onClick={() => setEditingRowId(null)}
-                                className="px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 transition"
-                              >
-                                Cancel
-                              </button>
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => handleAddStock(value)}
+                                  className="px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600 transition"
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={() => setEditingRowId(null)}
+                                  className="px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 transition"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
                             </div>
                           ) : (
                             <button
@@ -324,7 +328,7 @@ export default function OutStock() {
                               }}
                               className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 transition"
                             >
-                              Add Stock
+                              Out Stock
                             </button>
                           )}
                         </td>
@@ -343,7 +347,11 @@ export default function OutStock() {
           <ToastContainer />
         </div>
       )}
-      <SendStock isVisible={modalVisible} setIsVisible={setModalVisible} />
+      <SendStock
+        showModal={modalVisible}
+        setShowModal={setModalVisible}
+        fetchProducts={fetchProducts}
+      />
     </Layout>
   );
 }

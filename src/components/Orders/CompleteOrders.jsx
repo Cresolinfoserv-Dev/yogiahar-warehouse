@@ -89,7 +89,7 @@ export default function CompleteOrders() {
           </div>
         </td>
         <td className="px-4 py-3 ">
-          {row.sentTo === "" ? "In Stock" : row.sentTo}
+          {row.store === "" ? "In Stock" : row.store}
         </td>
         <td className="px-4 py-3 ">{row.stockType}</td>
         <td className="px-4 py-3">{row.orderStatus}</td>
