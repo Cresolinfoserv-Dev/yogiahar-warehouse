@@ -97,6 +97,7 @@ export default function AddProducts() {
     }
     formData.append("inventoryProductUnit", data.inventoryProductUnit);
     formData.append("inventoryCategory", data.inventoryCategory);
+    formData.append("inventoryBarCodeId", data.inventoryBarCodeId);
 
     const headers = {
       Authorization: `${authToken}`,

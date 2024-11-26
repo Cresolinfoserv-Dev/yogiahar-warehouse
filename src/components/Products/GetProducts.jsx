@@ -64,6 +64,7 @@ export default function GetProducts() {
       }
     } catch (error) {
       console.error("Error fetching Products:", error);
+      setLoading(false);
     } finally {
       setLoading(false);
     }
