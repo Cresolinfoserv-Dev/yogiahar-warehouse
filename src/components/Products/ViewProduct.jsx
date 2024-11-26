@@ -95,6 +95,7 @@ export default function ViewProduct() {
                         <p>Selling Price: ₹ {data.inventorySellingPrice}</p>
                         <p>GST Percent: {data.gstPercent}%</p>
                         <p>GST Amount: ₹ {data.gstAmount}</p>
+                        <p>HSN Code: ₹ {data.inventoryHSNCode}</p>
                         <img src={data.inventoryBarCode} alt="BarCode" />
                       </>
                     )}

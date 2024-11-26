@@ -98,6 +98,7 @@ export default function AddProducts() {
     formData.append("inventoryProductUnit", data.inventoryProductUnit);
     formData.append("inventoryCategory", data.inventoryCategory);
     formData.append("inventoryBarCodeId", data.inventoryBarCodeId);
+    formData.append("inventoryHSNCode", data.inventoryHSNCode);
 
     const headers = {
       Authorization: `${authToken}`,
@@ -331,6 +332,29 @@ export default function AddProducts() {
               {...register("inventoryBarCodeId")}
               className="w-full p-2 mt-1 border"
             />
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="inventoryHSNCode"
+              className="block text-sm font-medium text-gray-600"
+            >
+              Product HSN Code
+            </label>
+            <input
+              type="text"
+              name="inventoryHSNCode"
+              {...register("inventoryHSNCode", {
+                required: role === "Boutique" ? "HSN Code is required" : false,
+              })}
+              className="w-full p-2 mt-1 border"
+            />
+
+            {errors.inventoryHSNCode && (
+              <small className="text-red-500">
+                {errors.inventoryHSNCode.message}
+              </small>
+            )}
           </div>
 
           <div className="mb-4">
