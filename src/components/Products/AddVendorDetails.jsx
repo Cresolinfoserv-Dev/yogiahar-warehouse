@@ -141,17 +141,17 @@ export default function AddVendorDetails({
                     htmlFor="contact"
                     className="block text-sm font-medium text-gray-600"
                   >
-                    contact
+                    Contact
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     name="contact"
                     onWheel={numberInputOnWheelPreventChange}
                     {...register("contact", {
                       required: "Contact Number is required",
-                      maxLength: {
-                        value: 10,
-                        message: "Please enter 10 Characters",
+                      pattern: {
+                        value: /^[0-9]{10}$/,
+                        message: "Please enter a valid 10-digit contact number",
                       },
                     })}
                     className="w-full p-2 mt-1 border"
