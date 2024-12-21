@@ -21,8 +21,6 @@ export default function ViewProduct() {
       year: "numeric",
       month: "long",
       day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
@@ -95,7 +93,7 @@ export default function ViewProduct() {
                         <p>Selling Price: ₹ {data.inventorySellingPrice}</p>
                         <p>GST Percent: {data.gstPercent}%</p>
                         <p>GST Amount: ₹ {data.gstAmount}</p>
-                        <p>HSN Code: ₹ {data.inventoryHSNCode}</p>
+                        <p>HSN Code: {data.inventoryHSNCode}</p>
                         <img src={data.inventoryBarCode} alt="BarCode" />
                       </>
                     )}
