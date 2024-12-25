@@ -19,6 +19,7 @@ import ReturnStock from "./components/Stock/ReturnStock/ReturnStock";
 import GetCategories from "./components/Categories/GetCategories";
 import AddCategory from "./components/Categories/AddCategory";
 import EditCategory from "./components/Categories/EditCategory";
+import NewStock from "./components/NewStock/NewStock";
 
 function App() {
   return (
@@ -53,6 +54,8 @@ function App() {
           <Route path="/in-stock" element={<InStock />} />
           <Route path="/out-stock" element={<OutStock />} />
           <Route path="/return-stock" element={<ReturnStock />} />
+          {/*New  Stock */}
+          <Route path="/new-stock" element={<NewStock />} />
 
           {/* Orders */}
 

@@ -45,10 +45,9 @@ export default function AddStockModel({ showModal, setShowModal }) {
       if (response.status === 200) {
         notifySuccess("Stock data sent successfully!");
         localStorage.removeItem("stockData");
-        window.location.reload();
+        // window.location.reload();
         setShowModal(false);
       }
-
       setLoading(false);
     } catch (error) {
       setLoading(false);
