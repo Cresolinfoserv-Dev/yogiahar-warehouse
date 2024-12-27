@@ -10,7 +10,7 @@ const ViewOrderDetails = () => {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
-
+  console.log("object", data);
   const getSingleDetails = async () => {
     setLoading(true);
     try {
@@ -31,6 +31,10 @@ const ViewOrderDetails = () => {
   useEffect(() => {
     getSingleDetails();
   }, [id]);
+
+  const hasReturnedProducts = data?.products?.some(
+    (product) => product?.productOrderStatus === "Returned"
+  );
 
   return (
     <Layout>
@@ -70,15 +74,11 @@ const ViewOrderDetails = () => {
                     <th className="block p-2 font-semibold text-left text-gray-700 border border-gray-300 md:table-cell">
                       Unit
                     </th>
-                    {data?.products?.map((o) => (
-                      <>
-                        {o?.productOrderStatus === "Returned" && (
-                          <th className="block p-2 font-semibold text-left text-gray-700 border border-gray-300 md:table-cell">
-                            Return Stock
-                          </th>
-                        )}
-                      </>
-                    ))}
+                    {hasReturnedProducts && (
+                      <th className="block p-2 font-semibold text-left text-gray-700 border border-gray-300 md:table-cell">
+                        Return Stock
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody className="block md:table-row-group">
@@ -100,9 +100,11 @@ const ViewOrderDetails = () => {
                               ?.inventoryUnitName
                           }
                         </td>
-                        {o?.productOrderStatus === "Returned" && (
+                        {hasReturnedProducts && (
                           <td className="block p-2 text-gray-500 border border-gray-300 md:table-cell">
-                            {o?.returnQuantity}
+                            {o?.productOrderStatus === "Returned"
+                              ? o.returnQuantity
+                              : "-"}
                           </td>
                         )}
                       </tr>
