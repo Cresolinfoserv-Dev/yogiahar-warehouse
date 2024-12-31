@@ -54,31 +54,9 @@ const data = [
   {
     id: 3,
     title: "Stock",
-    icon: <FaBusinessTime />,
-    route: "#",
-    dropItems: [
-      {
-        id: 1,
-        title: "In Stock",
-        icon: <FaBusinessTime />,
-        route: "/in-stock",
-        dropItems: false,
-      },
-      {
-        id: 2,
-        title: "Out Stock",
-        icon: <FaBusinessTime />,
-        route: "/out-stock",
-        dropItems: false,
-      },
-      {
-        id: 3,
-        title: "Return Stock",
-        icon: <FaBusinessTime />,
-        route: "/return-stock",
-        dropItems: false,
-      },
-    ],
+    icon: <AiFillDashboard />,
+    route: "/stock",
+    dropItems: false,
   },
   {
     id: 4,

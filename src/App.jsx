@@ -6,8 +6,6 @@ import GetProducts from "./components/Products/GetProducts";
 import AddProducts from "./components/Products/AddNewProduct";
 import ViewProduct from "./components/Products/ViewProduct";
 import UpdateProduct from "./components/Products/UpdateProduct";
-import InStock from "./components/Stock/AddStock/InStock";
-import OutStock from "./components/Stock/OutStock/OutStock";
 import ProcessingOrders from "./components/Orders/ProcessingOrders";
 import CompleteOrders from "./components/Orders/CompleteOrders";
 import ReturnedOrders from "./components/Orders/ReturnedOrders";
@@ -15,7 +13,6 @@ import GetQuantity from "./components/Quantity/GetQuantity";
 import AddQuantity from "./components/Quantity/AddQuantity";
 import ViewOrderDetails from "./components/Orders/ViewOrderDetails";
 import UpdateQuantity from "./components/Quantity/UpdateQuantity";
-import ReturnStock from "./components/Stock/ReturnStock/ReturnStock";
 import GetCategories from "./components/Categories/GetCategories";
 import AddCategory from "./components/Categories/AddCategory";
 import EditCategory from "./components/Categories/EditCategory";
@@ -51,11 +48,7 @@ function App() {
 
           {/* Stock */}
 
-          <Route path="/in-stock" element={<InStock />} />
-          <Route path="/out-stock" element={<OutStock />} />
-          <Route path="/return-stock" element={<ReturnStock />} />
-          {/*New  Stock */}
-          <Route path="/new-stock" element={<NewStock />} />
+          <Route path="/stock" element={<NewStock />} />
 
           {/* Orders */}
 
