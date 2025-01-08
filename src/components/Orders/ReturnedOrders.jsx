@@ -64,11 +64,10 @@ export default function ReturnedOrders() {
         name: "Products",
         selector: (row) => (
           <div className="p-2 space-y-2 bg-white rounded-lg shadow-md">
-            {row.products.map((product) => (
-              <div key={product.productID?._id || Math.random()}>
-                {product.productID?.inventoryProductName} -{" "}
-                {product.sendQuantity} (
-                {product.productID?.inventoryProductUnit?.inventoryUnitName})
+            {row.productsData.map((product) => (
+              <div key={product.productId?._id || Math.random()}>
+                {product.productId?.name} - {product.sendQuantity} (
+                {product.productId?.unit?.unitName})
               </div>
             ))}
           </div>

@@ -17,14 +17,12 @@ const NewSendStock = ({ showModal, setShowModal, fetchProducts }) => {
   const [stockData, setStockData] = useState([]);
   const [selectedBoutique, setSelectedBoutique] = useState("");
   const [selectedStockType, setSelectedStockType] = useState("");
-
   const [selectedCafe, setSelectedCafe] = useState("");
-  //   const categoryName = sessionStorage.getItem("role");
   const type = sessionStorage.getItem("role");
-
   const socket = useSocket();
   const [boutiqueData, setBoutiqueData] = useState([]);
   const [cafeData, setCafeData] = useState([]);
+
   const data = [
     {
       id: 1,
@@ -42,10 +40,13 @@ const NewSendStock = ({ showModal, setShowModal, fetchProducts }) => {
       value: "Returned",
     },
   ];
+
   const fetchBoutiqueEmployees = async () => {
     setLoading(true);
+
     try {
       const response = await getBoutiqueEmployeesFunction();
+
       if (response.status === 200) {
         setLoading(false);
         setBoutiqueData(response?.data?.boutiques);
@@ -60,8 +61,10 @@ const NewSendStock = ({ showModal, setShowModal, fetchProducts }) => {
 
   const fetchCafeEmployees = async () => {
     setLoading(true);
+
     try {
       const response = await getCafeEmployeesFunction();
+
       if (response.status === 200) {
         setLoading(false);
         setCafeData(response?.data?.cafe);
@@ -127,7 +130,6 @@ const NewSendStock = ({ showModal, setShowModal, fetchProducts }) => {
 
     try {
       const response = await sendStockFunction(Payload);
-      console.log("response1", response);
 
       if (response.status === 200) {
         if (selectedStockType === "Returned") {
@@ -185,7 +187,6 @@ const NewSendStock = ({ showModal, setShowModal, fetchProducts }) => {
     }
 
     if (!stockData || stockData.length === 0) {
-      //   notifyError("No stock data available to send.");
       return;
     }
 
@@ -196,11 +197,9 @@ const NewSendStock = ({ showModal, setShowModal, fetchProducts }) => {
         type,
       });
 
-      console.log("response2", response);
       if (response.status === 200) {
         toast.success("Stock updated successfully");
         localStorage.removeItem("stock");
-        // window.location.reload();
         setShowModal(false);
       }
 
@@ -255,7 +254,6 @@ const NewSendStock = ({ showModal, setShowModal, fetchProducts }) => {
                   </label>
                   <select
                     id="boutique"
-                    // value={selectedStockType}
                     onChange={(e) => setSelectedStockType(e.target.value)}
                     className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                   >

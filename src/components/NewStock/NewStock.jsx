@@ -1,9 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// import SendStock from "./SendStock";
 import PropTypes from "prop-types";
 import NewSendStock from "./NewSendStock";
 import { getProductsFunction } from "../../Services/Apis";
@@ -104,7 +101,7 @@ export default function NewStock() {
         ? product.inventoryProductName
             .toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-          product.inventoryProductSKUCode
+          product.inventoryBarCodeId
             ?.toLowerCase()
             .includes(searchTerm.toLowerCase())
         : true
@@ -157,13 +154,6 @@ export default function NewStock() {
       );
       return;
     }
-
-    // const availableStock = parseFloat(row.inventoryProductQuantity);
-
-    // if (enteredQuantity > availableStock) {
-    //   notifyError("Insufficient stock available.");
-    //   return;
-    // }
 
     const stockData = {
       role: categoryName,
@@ -254,7 +244,6 @@ export default function NewStock() {
                       {[
                         "ID",
                         "Product Name",
-                        "SKU Code",
                         "Unit",
                         "Category",
                         "Current Quantity",
@@ -284,9 +273,6 @@ export default function NewStock() {
                             />
                           )}
                           {value.inventoryProductName}
-                        </td>
-                        <td className="px-4 py-3">
-                          {value.inventoryProductSKUCode}
                         </td>
                         <td className="px-4 py-3">
                           {value.inventoryProductUnit?.inventoryUnitName || ""}

@@ -85,7 +85,6 @@ export default function ViewProduct() {
                       Quantity: {data?.inventoryProductQuantity} (
                       {data?.inventoryProductUnit?.inventoryUnitName})
                     </p>
-                    <p>SKU: {data?.inventoryProductSKUCode}</p>
 
                     {data?.inventoryCategory?.inventoryType === "Boutique" && (
                       <>
@@ -94,6 +93,7 @@ export default function ViewProduct() {
                         <p>GST Percent: {data.gstPercent}%</p>
                         <p>GST Amount: ₹ {data.gstAmount}</p>
                         <p>HSN Code: {data.inventoryHSNCode}</p>
+                        <p>Product Code: {data.inventoryBarCodeId}</p>
                         <img src={data.inventoryBarCode} alt="BarCode" />
                       </>
                     )}

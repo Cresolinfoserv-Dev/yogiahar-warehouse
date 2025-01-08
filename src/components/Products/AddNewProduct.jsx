@@ -270,8 +270,9 @@ export default function AddProducts() {
               {...register(
                 "inventorySellingPrice",
                 {
-                  required:
-                    role === "Boutique" ? "Selling Price is required" : false,
+                  required: ["Boutique", "Cafe"].includes(role)
+                    ? "Selling Price is required"
+                    : false,
                 },
                 {
                   validate: (value) =>
@@ -301,8 +302,9 @@ export default function AddProducts() {
               {...register(
                 "gstPercent",
                 {
-                  required:
-                    role === "Boutique" ? "GST Percent is required" : false,
+                  required: ["Boutique", "Cafe"].includes(role)
+                    ? "GST Percent is required"
+                    : false,
                 },
                 {
                   validate: (value) =>
@@ -324,11 +326,11 @@ export default function AddProducts() {
               htmlFor="inventoryBarCodeId"
               className="block text-sm font-medium text-gray-600"
             >
-              Product Bar Code
+              Product Code
             </label>
             <input
               type="text"
-              name="inventoryProductQuantity"
+              name="inventoryBarCodeId"
               {...register("inventoryBarCodeId")}
               className="w-full p-2 mt-1 border"
             />
@@ -345,7 +347,7 @@ export default function AddProducts() {
               type="text"
               name="inventoryHSNCode"
               {...register("inventoryHSNCode", {
-                required: role === "Boutique" ? "HSN Code is required" : false,
+                required: "HSN Code is required",
               })}
               className="w-full p-2 mt-1 border"
             />

@@ -108,26 +108,46 @@ export default function UpdateProduct() {
   const handleUpdateProduct = async (data) => {
     setLoading(true);
 
-    const formData = new FormData();
-    Object.keys(data).forEach((key) => formData.append(key, data[key]));
-    if (updatedImages[0]) {
-      formData.append("InventoryProductFile", updatedImages[0]);
-    }
-
     try {
+      const formData = new FormData();
+
+      Object.keys(data).forEach((key) => {
+        if (data[key] === "" || data[key] == null) {
+          if (
+            key.includes("inventoryCostPrice") ||
+            key.includes("inventorySellingPrice") ||
+            key.includes("gstPercent")
+          ) {
+            formData.append(key, 0);
+          } else {
+            formData.append(key, "");
+          }
+        } else {
+          formData.append(key, data[key]);
+        }
+      });
+
+      if (updatedImages && updatedImages[0]) {
+        formData.append("InventoryProductFile", updatedImages[0]);
+      }
+
       const response = await productUpdateFunction(id, formData, {
         Authorization: authToken,
         "Content-Type": "multipart/form-data",
       });
+
       if (response.status === 200) {
         notify("success", "Product Updated successfully!");
         navigate("/products");
       } else {
-        notify("error", response.response.data.message);
+        notify(
+          "error",
+          response.response?.data?.message || "Unexpected error occurred."
+        );
       }
     } catch (error) {
       console.error("Product update error:", error);
-      notify("error", "Product update error");
+      notify("error", error.response?.data?.message || "Product update error");
     } finally {
       setLoading(false);
     }
@@ -266,8 +286,9 @@ export default function UpdateProduct() {
               {...register(
                 "inventorySellingPrice",
                 {
-                  required:
-                    role === "Boutique" ? "Selling Price is required" : false,
+                  required: ["Boutique", "Cafe"].includes(role)
+                    ? "Selling Price is required"
+                    : false,
                 },
                 {
                   validate: (value) => {
@@ -300,8 +321,9 @@ export default function UpdateProduct() {
               {...register(
                 "gstPercent",
                 {
-                  required:
-                    role === "Boutique" ? "GST Percent is required" : false,
+                  required: ["Boutique", "Cafe"].includes(role)
+                    ? "GST Percent is required"
+                    : false,
                 },
                 {
                   validate: (value) =>
@@ -323,14 +345,22 @@ export default function UpdateProduct() {
               htmlFor="inventoryBarCodeId"
               className="block text-sm font-medium text-gray-600"
             >
-              Product Bar Code
+              Product Code
             </label>
             <input
               type="text"
-              name="inventoryProductQuantity"
-              {...register("inventoryBarCodeId")}
+              name="inventoryBarCodeId"
+              {...register("inventoryBarCodeId", {
+                required: "Product Code is required",
+              })}
               className="w-full p-2 mt-1 border"
             />
+
+            {errors.inventoryBarCodeId && (
+              <small className="text-red-500">
+                {errors.inventoryBarCodeId.message}
+              </small>
+            )}
           </div>
 
           <div className="mb-4">
@@ -344,7 +374,7 @@ export default function UpdateProduct() {
               type="text"
               name="inventoryHSNCode"
               {...register("inventoryHSNCode", {
-                required: role === "Boutique" ? "HSN Code is required" : false,
+                required: "HSN Code is required",
               })}
               className="w-full p-2 mt-1 border"
             />

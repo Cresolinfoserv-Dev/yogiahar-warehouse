@@ -90,7 +90,6 @@ export default function GetProducts() {
     () => [
       { name: "ID", width: "100px" },
       { name: "Product Name", width: "300px" },
-      { name: "SKU", width: "150px" },
       { name: "Unit", width: "150px" },
       { name: "Quantity", width: "150px" },
       { name: "Category", width: "150px" },
@@ -163,8 +162,21 @@ export default function GetProducts() {
                     name="bulkFile"
                     {...register("bulkFile", {
                       required: "File is required",
+                      validate: {
+                        fileType: (value) => {
+                          if (!value?.[0]) return "File is required";
+                          const validTypes = [
+                            "application/vnd.ms-excel",
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            "text/csv",
+                          ];
+                          return validTypes.includes(value[0].type)
+                            ? true
+                            : "Only CSV or Excel files are accepted";
+                        },
+                      },
                     })}
-                    className={`mt-1 p-2 border w-full bg-white`}
+                    className="mt-1 p-2 border w-full bg-white"
                   />
                   {errors.bulkFile && (
                     <small className="text-red-500">
@@ -214,9 +226,6 @@ export default function GetProducts() {
                           )}
 
                           {product.inventoryProductName}
-                        </td>
-                        <td className="px-4 py-3">
-                          {product?.inventoryProductSKUCode}
                         </td>
                         <td className="px-4 py-3">
                           {product?.inventoryProductUnit?.inventoryUnitName}

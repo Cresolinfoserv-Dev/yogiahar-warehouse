@@ -26,8 +26,10 @@ export default function ProcessingOrders() {
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
+
     try {
       const response = await getStockOrdersFunction(categoryName);
+
       if (response.status === 200) {
         setData(response.data.processingOrders || []);
       }
@@ -45,6 +47,7 @@ export default function ProcessingOrders() {
   const handleOrderStatus = async (id, orderStatus) => {
     try {
       const response = await changeOrderStatusByID(id, { orderStatus });
+
       if (response.status === 200) {
         fetchOrders();
         notify("success", "Order status updated");
@@ -87,10 +90,10 @@ export default function ProcessingOrders() {
       name: "Products",
       selector: (row) => (
         <div className="p-2 bg-white rounded-lg shadow-md space-y-2">
-          {row.products.map((product) => (
-            <div key={product.productID?._id || Math.random()}>
-              {product.productID?.inventoryProductName} - {product.sendQuantity}{" "}
-              ({product.productID?.inventoryProductUnit?.inventoryUnitName})
+          {row.productsData.map((product) => (
+            <div key={product.productId?._id || Math.random()}>
+              {product.productId?.name} - {product.sendQuantity} (
+              {product.productId?.unit?.unitName})
             </div>
           ))}
         </div>

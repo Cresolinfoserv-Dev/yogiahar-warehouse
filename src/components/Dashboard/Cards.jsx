@@ -114,9 +114,9 @@ const Dashboard = () => {
       const productMap = new Map();
 
       filteredOrders.forEach((order) => {
-        order.products.forEach((product) => {
-          const productId = product.productID._id;
-          const productName = product.productID.inventoryProductName;
+        order.productsData.forEach((product) => {
+          const productId = product.productId._id;
+          const productName = product.productId.name;
           const sendQuantity = parseFloat(product.sendQuantity) || 0;
           const returnQuantity = parseFloat(product.returnQuantity) || 0;
           const stockType = order.stockType;
@@ -187,12 +187,12 @@ const Dashboard = () => {
       const storeType = order.store;
       allStoreTypes.add(storeType);
 
-      order.products.forEach((product) => {
-        const productName = product.productID.inventoryProductName;
+      order.productsData.forEach((product) => {
+        const productName = product.productId.name;
         const sendQuantity = parseFloat(product.sendQuantity) || 0;
         const returnQuantity = parseFloat(product.returnQuantity) || 0;
         const stockType = order.stockType;
-        const productCode = product.productID.inventoryProductSKUCode;
+        const productCode = product.productId.productCode;
 
         let outQuantity = 0;
         if (stockType === "Out") {
@@ -300,7 +300,8 @@ const Dashboard = () => {
         Category: product.inventoryCategory?.inventoryCategoryName,
         Quantity: product.inventoryProductQuantity,
         Unit: product.inventoryProductUnit?.inventoryUnitName,
-        SKU: product.inventoryProductSKUCode,
+        HSNCode: product.inventoryHSNCode,
+        ProductCode: product.inventoryBarCodeId,
         CostPrice: product.inventoryCostPrice,
         SellingPrice: product.inventorySellingPrice,
         GSTPercent: product.gstPercent,

@@ -74,16 +74,15 @@ export default function CompleteOrders() {
         </td>
         <td className="md:px-4 py-3">
           <div className="p-2 space-y-2 bg-white rounded-lg shadow-md">
-            {row.products.map((product) => (
+            {row.productsData.map((product) => (
               <div
                 key={
-                  product.productID?._id ||
-                  product.productID?.inventoryProductName
+                  product.productId?._id ||
+                  product.productId?.inventoryProductName
                 }
               >
-                {product.productID?.inventoryProductName} -{" "}
-                {product.sendQuantity} (
-                {product.productID?.inventoryProductUnit?.inventoryUnitName})
+                {product.productId?.name} - {product.sendQuantity} (
+                {product.productId?.unit?.unitName})
               </div>
             ))}
           </div>

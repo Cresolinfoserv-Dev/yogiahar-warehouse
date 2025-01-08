@@ -10,7 +10,7 @@ const ViewOrderDetails = () => {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
-  console.log("object", data);
+
   const getSingleDetails = async () => {
     setLoading(true);
     try {
@@ -32,7 +32,7 @@ const ViewOrderDetails = () => {
     getSingleDetails();
   }, [id]);
 
-  const hasReturnedProducts = data?.products?.some(
+  const hasReturnedProducts = data?.productsData?.some(
     (product) => product?.productOrderStatus === "Returned"
   );
 
@@ -82,22 +82,22 @@ const ViewOrderDetails = () => {
                   </tr>
                 </thead>
                 <tbody className="block md:table-row-group">
-                  {data?.products?.map((o, idx) => (
+                  {data?.productsData?.map((o, idx) => (
                     <React.Fragment key={idx}>
                       <tr
                         key={idx}
                         className="border border-gray-300 md:table-row"
                       >
                         <td className="block p-2 text-gray-700 border border-gray-300 md:table-cell">
-                          {o?.productID?.inventoryProductName}
+                          {o?.productId?.name}
                         </td>
                         <td className="block p-2 text-gray-500 border border-gray-300 md:table-cell">
                           {o.sendQuantity}
                         </td>
                         <td className="block p-2 text-gray-500 border border-gray-300 md:table-cell">
                           {
-                            o?.productID?.inventoryProductUnit
-                              ?.inventoryUnitName
+                            o?.productId?.unit
+                              ?.unitName
                           }
                         </td>
                         {hasReturnedProducts && (
