@@ -18,6 +18,7 @@ export default function GetProducts() {
   const recordsPerPage = 20;
   const categoryName = sessionStorage.getItem("role");
   const authToken = sessionStorage.getItem("adminToken");
+  const [bulkUploadError, setBulkUploadError] = useState("");
 
   const {
     register,
@@ -90,6 +91,7 @@ export default function GetProducts() {
     () => [
       { name: "ID", width: "100px" },
       { name: "Product Name", width: "300px" },
+      { name: "Product Code", width: "200px" },
       { name: "Unit", width: "150px" },
       { name: "Quantity", width: "150px" },
       { name: "Category", width: "150px" },
@@ -120,11 +122,13 @@ export default function GetProducts() {
         fetchProducts();
       } else if (response.response.status === 422) {
         setLoading(false);
+        fetchProducts();
+        setBulkUploadError(response.response?.data?.message);
       }
     } catch (error) {
       setLoading(false);
-      notifyError(error.message || "An error occurred");
-      console.error("Bluk Product creation error:", error);
+      notifyError("Failed to upload file");
+      console.error("Bulk Product creation error:", error);
     }
   };
 
@@ -165,14 +169,10 @@ export default function GetProducts() {
                       validate: {
                         fileType: (value) => {
                           if (!value?.[0]) return "File is required";
-                          const validTypes = [
-                            "application/vnd.ms-excel",
-                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            "text/csv",
-                          ];
+                          const validTypes = ["text/csv"];
                           return validTypes.includes(value[0].type)
                             ? true
-                            : "Only CSV or Excel files are accepted";
+                            : "Only CSV is accepted";
                         },
                       },
                     })}
@@ -182,6 +182,14 @@ export default function GetProducts() {
                     <small className="text-red-500">
                       {errors.bulkFile.message}
                     </small>
+                  )}
+
+                  {bulkUploadError && (
+                    <div>
+                      <small className="text-red-500 text-center">
+                        {bulkUploadError}
+                      </small>
+                    </div>
                   )}
                 </div>
 
@@ -224,8 +232,10 @@ export default function GetProducts() {
                               className="p-1 w-8 h-8"
                             />
                           )}
-
                           {product.inventoryProductName}
+                        </td>
+                        <td className="px-4 py-3">
+                          {product?.inventoryBarCodeId}
                         </td>
                         <td className="px-4 py-3">
                           {product?.inventoryProductUnit?.inventoryUnitName}

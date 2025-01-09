@@ -185,7 +185,10 @@ const Dashboard = () => {
 
     filteredStoreOrders.forEach((order) => {
       const storeType = order.store;
-      allStoreTypes.add(storeType);
+
+      if (storeType) {
+        allStoreTypes.add(storeType);
+      }
 
       order.productsData.forEach((product) => {
         const productName = product.productId.name;
@@ -210,8 +213,10 @@ const Dashboard = () => {
           };
         }
 
-        productMap[productName].stores[storeType] =
-          (productMap[productName].stores[storeType] || 0) + outQuantity;
+        if (storeType) {
+          productMap[productName].stores[storeType] =
+            (productMap[productName].stores[storeType] || 0) + outQuantity;
+        }
 
         productMap[productName].Total += outQuantity;
         productMap[productName].Total = parseFloat(

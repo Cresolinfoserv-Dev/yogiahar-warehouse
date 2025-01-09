@@ -16,7 +16,6 @@ export default function AddProducts() {
   const [units, setUnits] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState("");
   const authToken = sessionStorage.getItem("adminToken");
   const role = sessionStorage.getItem("role");
   const [category, setCategory] = useState([]);
@@ -113,7 +112,7 @@ export default function AddProducts() {
         setLoading(false);
         navigate("/products");
       } else if (response.response.status === 422) {
-        setErrorMessage(response.response.data.message);
+        notifyError(response.response?.data?.message);
         setLoading(false);
       }
     } catch (error) {
@@ -162,7 +161,6 @@ export default function AddProducts() {
               className={`mt-1 p-2 border w-full`}
             />
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventoryProductName"
@@ -187,15 +185,7 @@ export default function AddProducts() {
                 {errors.inventoryProductName.message}
               </small>
             )}
-            {errorMessage && (
-              <div>
-                <small className="text-red-500 text-center">
-                  {errorMessage}
-                </small>
-              </div>
-            )}
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventoryProductDescription"
@@ -210,7 +200,6 @@ export default function AddProducts() {
               className="w-full p-2 mt-1 border"
             />
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventoryProductQuantity"
@@ -232,7 +221,6 @@ export default function AddProducts() {
               </small>
             )}
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventoryCostPrice"
@@ -267,20 +255,20 @@ export default function AddProducts() {
               step="0.01"
               onWheel={numberInputOnWheelPreventChange}
               name="inventorySellingPrice"
-              {...register(
-                "inventorySellingPrice",
-                {
-                  required: ["Boutique", "Cafe"].includes(role)
-                    ? "Selling Price is required"
-                    : false,
-                },
-                {
-                  validate: (value) =>
-                    !costPrice ||
+              {...register("inventorySellingPrice", {
+                required: ["Boutique", "Cafe"].includes(role)
+                  ? "Selling Price is required"
+                  : false,
+                validate: (value) => {
+                  if (!costPrice) {
+                    return true;
+                  }
+                  return (
                     parseFloat(value) <= parseFloat(costPrice) ||
-                    "Selling price cannot be greater than cost price",
-                }
-              )}
+                    "Selling price cannot be greater than cost price"
+                  );
+                },
+              })}
               className="w-full p-2 mt-1 border"
             />
             {errors.inventorySellingPrice && (
@@ -289,7 +277,6 @@ export default function AddProducts() {
               </small>
             )}
           </div>
-
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-600">
               GST Percentage
@@ -320,7 +307,6 @@ export default function AddProducts() {
               </small>
             )}
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventoryBarCodeId"
@@ -335,7 +321,6 @@ export default function AddProducts() {
               className="w-full p-2 mt-1 border"
             />
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventoryHSNCode"
@@ -358,7 +343,6 @@ export default function AddProducts() {
               </small>
             )}
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventoryProductUnit"
@@ -387,7 +371,6 @@ export default function AddProducts() {
               </small>
             )}
           </div>
-
           <div className="w-1/2 col-span-2 mb-4">
             <label
               htmlFor="inventoryCategory"
@@ -416,7 +399,6 @@ export default function AddProducts() {
               </small>
             )}
           </div>
-
           <div className="flex justify-end col-span-2 mb-4">
             <button
               type="submit"

@@ -72,30 +72,38 @@ export default function ViewProduct() {
               <div className="bg-white p-6 rounded-md shadow-md">
                 <div className="flex justify-between mb-6">
                   <div className="space-y-2">
-                    <h3 className="text-2xl font-bold">
-                      {data?.inventoryProductName}
-                    </h3>
-                    <p>{data?.inventoryProductDescription}</p>
-
-                    <p>
-                      Category: {data?.inventoryCategory?.inventoryCategoryName}
-                    </p>
-
-                    <p>
-                      Quantity: {data?.inventoryProductQuantity} (
-                      {data?.inventoryProductUnit?.inventoryUnitName})
-                    </p>
-
-                    {data?.inventoryCategory?.inventoryType === "Boutique" && (
-                      <>
-                        <p>Cost Price: ₹ {data.inventoryCostPrice}</p>
-                        <p>Selling Price: ₹ {data.inventorySellingPrice}</p>
-                        <p>GST Percent: {data.gstPercent}%</p>
-                        <p>GST Amount: ₹ {data.gstAmount}</p>
-                        <p>HSN Code: {data.inventoryHSNCode}</p>
-                        <p>Product Code: {data.inventoryBarCodeId}</p>
-                        <img src={data.inventoryBarCode} alt="BarCode" />
-                      </>
+                    {data?.inventoryProductName && (
+                      <h3 className="text-2xl font-bold">
+                        {data.inventoryProductName}
+                      </h3>
+                    )}
+                    {data?.inventoryProductDescription && (
+                      <p>{data.inventoryProductDescription}</p>
+                    )}
+                    {data?.inventoryCategory?.inventoryCategoryName && (
+                      <p>
+                        Category: {data.inventoryCategory.inventoryCategoryName}
+                      </p>
+                    )}
+                    {data?.inventoryProductQuantity &&
+                      data?.inventoryProductUnit?.inventoryUnitName && (
+                        <p>
+                          Quantity: {data.inventoryProductQuantity} (
+                          {data.inventoryProductUnit.inventoryUnitName})
+                        </p>
+                      )}
+                    <p>Cost Price: ₹ {data.inventoryCostPrice}</p>
+                    <p>Selling Price: ₹ {data.inventorySellingPrice}</p>
+                    {data?.gstPercent && <p>GST Percent: {data.gstPercent}%</p>}
+                    {data?.gstAmount && <p>GST Amount: ₹ {data.gstAmount}</p>}
+                    {data?.inventoryHSNCode && (
+                      <p>HSN Code: {data.inventoryHSNCode}</p>
+                    )}
+                    {data?.inventoryBarCodeId && (
+                      <p>Product Code: {data.inventoryBarCodeId}</p>
+                    )}
+                    {data?.inventoryCategory?.inventoryType !== "Kitchen" && (
+                      <img src={data.inventoryBarCode} alt="BarCode" />
                     )}
                   </div>
 
@@ -104,7 +112,7 @@ export default function ViewProduct() {
                     {data?.inventoryProductImageUrl ? (
                       <img
                         src={data.inventoryProductImageUrl}
-                        alt={data?.inventoryProductName}
+                        alt={data.inventoryProductName}
                         className="w-36 h-auto"
                       />
                     ) : (

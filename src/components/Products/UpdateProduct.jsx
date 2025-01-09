@@ -185,7 +185,6 @@ export default function UpdateProduct() {
               className="mt-1 p-2 border w-full"
             />
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventoryProductName"
@@ -210,7 +209,6 @@ export default function UpdateProduct() {
               </small>
             )}
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventoryProductDescription"
@@ -229,7 +227,6 @@ export default function UpdateProduct() {
               </small>
             )}
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventoryProductQuantity"
@@ -250,7 +247,6 @@ export default function UpdateProduct() {
               </small>
             )}
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventoryCostPrice"
@@ -271,7 +267,6 @@ export default function UpdateProduct() {
               </small>
             )}
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventorySellingPrice"
@@ -283,23 +278,21 @@ export default function UpdateProduct() {
               type="number"
               step="0.01"
               onWheel={numberInputOnWheelPreventChange}
-              {...register(
-                "inventorySellingPrice",
-                {
-                  required: ["Boutique", "Cafe"].includes(role)
-                    ? "Selling Price is required"
-                    : false,
+              {...register("inventorySellingPrice", {
+                required: ["Boutique", "Cafe"].includes(role)
+                  ? "Selling Price is required"
+                  : false,
+                validate: (value) => {
+                  const costPrice = getValues("inventoryCostPrice");
+                  if (!costPrice) {
+                    return true;
+                  }
+                  return (
+                    parseFloat(value) <= parseFloat(costPrice) ||
+                    "Selling price cannot be greater than cost price"
+                  );
                 },
-                {
-                  validate: (value) => {
-                    const costPrice = getValues("inventoryCostPrice");
-                    return (
-                      value <= costPrice ||
-                      "Selling price cannot be greater than cost price"
-                    );
-                  },
-                }
-              )}
+              })}
               className="w-full p-2 mt-1 border"
             />
             {errors.inventorySellingPrice && (
@@ -339,7 +332,6 @@ export default function UpdateProduct() {
               </small>
             )}
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventoryBarCodeId"
@@ -362,7 +354,6 @@ export default function UpdateProduct() {
               </small>
             )}
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventoryHSNCode"
@@ -385,7 +376,6 @@ export default function UpdateProduct() {
               </small>
             )}
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="inventoryProductUnit"
@@ -412,7 +402,6 @@ export default function UpdateProduct() {
               </small>
             )}
           </div>
-
           <div className="w-1/2 col-span-2 mb-4">
             <label
               htmlFor="inventoryCategory"
@@ -439,7 +428,6 @@ export default function UpdateProduct() {
               </small>
             )}
           </div>
-
           {product?.inventoryProductImageUrl && (
             <div className="col-span-2 w-1/2 mb-4">
               <label className="block text-sm font-medium text-gray-600">
@@ -453,7 +441,6 @@ export default function UpdateProduct() {
               />
             </div>
           )}
-
           <div className="mb-4">
             <button
               type="submit"

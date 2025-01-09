@@ -142,7 +142,7 @@ const NewSendStock = ({ showModal, setShowModal, fetchProducts }) => {
 
             if (updateOrderStatusRes.status === 200) {
               toast.success("Stock returned successfully");
-              localStorage.removeItem("returnStock");
+              localStorage.removeItem("stock");
               fetchProducts();
               setShowModal(false);
             } else {
@@ -201,6 +201,7 @@ const NewSendStock = ({ showModal, setShowModal, fetchProducts }) => {
         toast.success("Stock updated successfully");
         localStorage.removeItem("stock");
         setShowModal(false);
+        fetchProducts();
       }
 
       setLoading(false);
