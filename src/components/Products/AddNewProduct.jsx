@@ -173,10 +173,6 @@ export default function AddProducts() {
               name="inventoryProductName"
               {...register("inventoryProductName", {
                 required: "Product Name is required",
-                maxLength: {
-                  value: 30,
-                  message: "Please enter 30 Characters",
-                },
               })}
               className="w-full p-2 mt-1 border"
             />

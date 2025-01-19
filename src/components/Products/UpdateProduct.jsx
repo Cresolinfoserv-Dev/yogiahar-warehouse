@@ -196,10 +196,6 @@ export default function UpdateProduct() {
               type="text"
               {...register("inventoryProductName", {
                 required: "Name is required",
-                maxLength: {
-                  value: 30,
-                  message: "Please enter 30 Characters",
-                },
               })}
               className="w-full p-2 mt-1 border"
             />
