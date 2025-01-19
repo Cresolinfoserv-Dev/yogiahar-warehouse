@@ -282,16 +282,6 @@ export default function UpdateProduct() {
                 required: ["Boutique", "Cafe"].includes(role)
                   ? "Selling Price is required"
                   : false,
-                validate: (value) => {
-                  const costPrice = getValues("inventoryCostPrice");
-                  if (!costPrice) {
-                    return true;
-                  }
-                  return (
-                    parseFloat(value) <= parseFloat(costPrice) ||
-                    "Selling price cannot be greater than cost price"
-                  );
-                },
               })}
               className="w-full p-2 mt-1 border"
             />

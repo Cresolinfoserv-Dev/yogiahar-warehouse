@@ -15,11 +15,12 @@ export default function GetProducts() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 20;
+  const recordsPerPage = 50;
   const categoryName = sessionStorage.getItem("role");
   const authToken = sessionStorage.getItem("adminToken");
   const [bulkUploadError, setBulkUploadError] = useState("");
-
+  const [copies, setCopies] = useState({});
+  const role = sessionStorage.getItem("role");
   const {
     register,
     handleSubmit,
@@ -60,6 +61,7 @@ export default function GetProducts() {
     setLoading(true);
     try {
       const response = await getProductsFunction(categoryName);
+
       if (response.status === 200) {
         setData(response?.data?.products || []);
       }
@@ -89,9 +91,10 @@ export default function GetProducts() {
 
   const columns = useMemo(
     () => [
-      { name: "ID", width: "100px" },
-      { name: "Product Name", width: "300px" },
-      { name: "Product Code", width: "200px" },
+      { name: "ID", width: "80px" },
+      { name: "Product Name", width: "200px" },
+      { name: "Product Code", width: "100px" },
+
       { name: "Unit", width: "150px" },
       { name: "Quantity", width: "150px" },
       { name: "Category", width: "150px" },
@@ -130,6 +133,85 @@ export default function GetProducts() {
       notifyError("Failed to upload file");
       console.error("Bulk Product creation error:", error);
     }
+  };
+
+  const handlePrint = async (orderData, copies = 1, labelsPerRow = 3) => {
+    const price = orderData?.inventorySellingPrice
+      ? orderData.inventorySellingPrice
+      : orderData.inventoryCostPrice;
+    if (orderData && orderData.inventoryBarCode) {
+      const printWindow = window.open("", "PRINT", "height=800,width=800");
+      printWindow.document.write(`
+      <html>
+        <head>
+          <style>
+            @media print {
+              @page {
+                size: auto;
+                margin: 0;
+              }
+              body {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                width: ${labelsPerRow * 37}mm;x
+                height: auto;
+              }
+              .print-container {
+                width: 35mm;
+                text-align: center;
+                height: 22mm;
+                display: grid;
+                justify-content: center;
+                margin-left: 1.7mm;
+                overflow: hidden;
+                page-break-inside: avoid;
+              }
+              img {
+                width: 18mm;
+                height: 9mm;
+                object-fit: fill;
+                margin: 0;
+                padding: 0;
+                display: block;
+              }
+              small {
+                font-size: 12px !important;
+                font-weight: bold !important;
+                line-height: 1.5em !important;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          ${Array.from({ length: copies })
+            .map(
+              () => `
+                <div class="print-container">
+                  <small>Oneness Shop</small>
+                   <small>${orderData?.inventoryProductName}</small>
+                  <img src="${orderData?.inventoryBarCode}" alt="barcode" />
+                   <small>₹ ${price}</small>
+                </div>
+              `
+            )
+            .join("")}
+        </body>
+      </html>
+    `);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    } else {
+      console.warn("No valid order data to print.");
+    }
+  };
+
+  const handleCopyChange = (productId, value) => {
+    setCopies((prev) => ({ ...prev, [productId]: value }));
   };
 
   return (
@@ -234,9 +316,20 @@ export default function GetProducts() {
                           )}
                           {product.inventoryProductName}
                         </td>
-                        <td className="px-4 py-3">
-                          {product?.inventoryBarCodeId}
-                        </td>
+                        {role === "Cafe" || role === "Boutique" ? (
+                          <td className="px-4 py-3">
+                            <img
+                              src={product?.inventoryBarCode}
+                              alt="barCode"
+                              className="w-[100px]"
+                            />
+                          </td>
+                        ) : (
+                          <td className="px-4 py-3">
+                            {product?.inventoryBarCodeId}
+                          </td>
+                        )}
+
                         <td className="px-4 py-3">
                           {product?.inventoryProductUnit?.inventoryUnitName}
                         </td>
@@ -247,7 +340,7 @@ export default function GetProducts() {
                           {product?.inventoryCategory?.inventoryCategoryName}
                         </td>
                         <td className="px-4 py-3">
-                          <div className="flex justify-start p-1 space-x-2">
+                          <div className="flex justify-start p-1 space-x-4">
                             <Link to={`/product/update/${product._id}`}>
                               <small className="px-2 bg-green-100 border border-green-600 rounded-sm hover:bg-green-200">
                                 Edit
@@ -258,6 +351,33 @@ export default function GetProducts() {
                                 View
                               </small>
                             </Link>
+                            {(role === "Cafe" || role === "Boutique") && (
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="number"
+                                  value={copies[product._id] || ""}
+                                  onChange={(e) =>
+                                    handleCopyChange(
+                                      product._id,
+                                      e.target.value
+                                    )
+                                  }
+                                  className="w-16 p-1 border rounded"
+                                  placeholder="Copies"
+                                />
+                                <button
+                                  onClick={() =>
+                                    handlePrint(
+                                      product,
+                                      copies[product._id] || 1
+                                    )
+                                  }
+                                  className="px-2 bg-red-100 border border-red-600 rounded-sm hover:bg-red-200"
+                                >
+                                  <small>Print</small>
+                                </button>
+                              </div>
+                            )}
                           </div>
                         </td>
                       </tr>

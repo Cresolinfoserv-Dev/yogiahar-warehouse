@@ -259,15 +259,6 @@ export default function AddProducts() {
                 required: ["Boutique", "Cafe"].includes(role)
                   ? "Selling Price is required"
                   : false,
-                validate: (value) => {
-                  if (!costPrice) {
-                    return true;
-                  }
-                  return (
-                    parseFloat(value) <= parseFloat(costPrice) ||
-                    "Selling price cannot be greater than cost price"
-                  );
-                },
               })}
               className="w-full p-2 mt-1 border"
             />
