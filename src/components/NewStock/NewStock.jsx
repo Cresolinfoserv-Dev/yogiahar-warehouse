@@ -71,8 +71,8 @@ export default function NewStock() {
   const [modalVisible, setModalVisible] = useState(false);
   const [productId, setProductId] = useState("");
   const categoryName = sessionStorage.getItem("role");
-  const recordsPerPage = 20;
-
+  const recordsPerPage = 50;
+  const [stock, setStock] = useState(null);
   const fetchProducts = async () => {
     setLoading(true);
     try {
@@ -152,6 +152,10 @@ export default function NewStock() {
       notifyError(
         "Please enter a valid quantity greater than or equal to 0.1."
       );
+      return;
+    }
+    if (parseFloat(enteredQuantity) > row.inventoryProductQuantity) {
+      notifyError(`Insufficient quantity for product`);
       return;
     }
 
@@ -315,6 +319,7 @@ export default function NewStock() {
                               onClick={() => {
                                 setEditingRowId(value._id);
                                 setProductId(value._id);
+                                setStock(value.inventoryProductQuantity);
                               }}
                               className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 transition"
                             >
@@ -341,6 +346,7 @@ export default function NewStock() {
         showModal={modalVisible}
         setShowModal={setModalVisible}
         fetchProducts={fetchProducts}
+        stock={stock}
       />
     </Layout>
   );

@@ -28,6 +28,7 @@ export default function ViewProduct() {
   const getSingleDetails = async () => {
     try {
       const response = await singleProductGetFunction(id);
+
       if (response.status === 200) {
         setData(response.data?.product);
       }
@@ -94,8 +95,8 @@ export default function ViewProduct() {
                       )}
                     <p>Cost Price: ₹ {data.inventoryCostPrice}</p>
                     <p>Selling Price: ₹ {data.inventorySellingPrice}</p>
-                    {data?.gstPercent && <p>GST Percent: {data.gstPercent}%</p>}
-                    {data?.gstAmount && <p>GST Amount: ₹ {data.gstAmount}</p>}
+                    <p>GST Percent: {data.gstPercent}%</p>
+                    <p>GST Amount: ₹ {data.gstAmount}</p>
                     {data?.inventoryHSNCode && (
                       <p>HSN Code: {data.inventoryHSNCode}</p>
                     )}

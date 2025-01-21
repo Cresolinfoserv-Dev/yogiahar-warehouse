@@ -15,6 +15,9 @@ export default function GetProducts() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [search, setSearch] = useState("");
+
   const recordsPerPage = 50;
   const categoryName = sessionStorage.getItem("role");
   const authToken = sessionStorage.getItem("adminToken");
@@ -41,11 +44,25 @@ export default function GetProducts() {
     });
   };
 
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      const lowerSearch = search.toLowerCase();
+      setFilteredProducts(
+        data.filter(
+          (product) =>
+            product.inventoryProductName.toLowerCase().includes(lowerSearch) ||
+            product.inventoryBarCodeId?.toLowerCase().includes(lowerSearch)
+        )
+      );
+    }, 300);
+    return () => clearTimeout(delayDebounce);
+  }, [search, data]);
+
   const lastIndex = useMemo(() => currentPage * recordsPerPage, [currentPage]);
   const firstIndex = useMemo(() => lastIndex - recordsPerPage, [lastIndex]);
   const records = useMemo(
-    () => data.slice(firstIndex, lastIndex),
-    [data, firstIndex, lastIndex]
+    () => filteredProducts.slice(firstIndex, lastIndex),
+    [filteredProducts, firstIndex, lastIndex]
   );
 
   const npage = useMemo(
@@ -63,7 +80,10 @@ export default function GetProducts() {
       const response = await getProductsFunction(categoryName);
 
       if (response.status === 200) {
-        setData(response?.data?.products || []);
+        const sortedProducts = (response?.data?.products || []).sort(
+          (a, b) => Number(a.inventoryBarCodeId) - Number(b.inventoryBarCodeId)
+        );
+        setData(sortedProducts);
       }
     } catch (error) {
       console.error("Error fetching Products:", error);
@@ -142,65 +162,77 @@ export default function GetProducts() {
     if (orderData && orderData.inventoryBarCode) {
       const printWindow = window.open("", "PRINT", "height=800,width=800");
       printWindow.document.write(`
-      <html>
-        <head>
-          <style>
-            @media print {
-              @page {
-                size: auto;
-                margin: 0;
+        <html>
+          <head>
+            <style>
+             @media print {
+             @page {
+              size: auto;
+               margin: 0;
               }
-              body {
-                margin: 0;
-                padding: 0;
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: flex-start;
-                width: ${labelsPerRow * 37}mm;x
-                height: auto;
-              }
-              .print-container {
-                width: 35mm;
-                text-align: center;
-                height: 22mm;
-                display: grid;
-                justify-content: center;
-                margin-left: 1.7mm;
-                overflow: hidden;
-                page-break-inside: avoid;
-              }
-              img {
-                width: 18mm;
-                height: 9mm;
-                object-fit: fill;
-                margin: 0;
-                padding: 0;
-                display: block;
-              }
-              small {
-                font-size: 12px !important;
-                font-weight: bold !important;
-                line-height: 1.5em !important;
-              }
-            }
-          </style>
-        </head>
-        <body>
-          ${Array.from({ length: copies })
-            .map(
-              () => `
-                <div class="print-container">
-                  <small>Oneness Shop</small>
-                   <small>${orderData?.inventoryProductName}</small>
-                  <img src="${orderData?.inventoryBarCode}" alt="barcode" />
-                   <small>₹ ${price}</small>
-                </div>
-              `
-            )
-            .join("")}
-        </body>
-      </html>
-    `);
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      width: ${labelsPerRow * 37}mm;
+      height: auto;
+    }
+    .print-container {
+      width: 35mm;
+      text-align: center;
+      height: 22mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-left: 1.7mm;
+  
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+    img {
+      width: 18mm;
+      height: 9mm;
+      object-fit: fill;
+      margin: 0;
+      padding: 0;
+      display: block;
+      margin-bottom:1mm;
+    }
+    small {
+      font-size: 10px !important;
+      font-weight: bold !important;
+      line-height: 1em !important;
+      text-align: center; 
+      width: 30mm; 
+      display: block; 
+       
+    }
+      .print-container small:first-of-type {
+      margin-bottom: 2mm; 
+    }
+  }
+  
+            </style>
+          </head>
+          <body>
+            ${Array.from({ length: copies })
+              .map(
+                () => `
+                  <div class="print-container">
+                    <small>Oneness Shop</small>
+                     <small>${orderData?.inventoryProductName}</small>
+                    <img src="${orderData?.inventoryBarCode}" alt="barcode" />
+                     <small>₹ ${price}</small>
+                  </div>
+                `
+              )
+              .join("")}
+          </body>
+        </html>
+        `);
       printWindow.document.close();
       printWindow.focus();
       printWindow.print();
@@ -223,12 +255,23 @@ export default function GetProducts() {
           <BreadCrumb pageName="Products" />
 
           <div className="flex justify-between mb-5">
-            <div className="w-fit flex items-end ">
-              <Link to="/product/add">
-                <h4 className="p-2 text-center text-white bg-black hover:bg-white hover:text-black transition duration-500">
-                  Add New Product
-                </h4>
-              </Link>
+            <div className="flex items-center gap-10">
+              <div className="w-fit flex items-end ">
+                <Link to="/product/add">
+                  <h4 className="p-2 text-center text-white bg-black hover:bg-white hover:text-black transition duration-500">
+                    Add New Product
+                  </h4>
+                </Link>
+              </div>
+              <div className="grid ">
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="p-2 border rounded"
+                  placeholder="Search by Name or Code"
+                />
+              </div>
             </div>
 
             <div>
