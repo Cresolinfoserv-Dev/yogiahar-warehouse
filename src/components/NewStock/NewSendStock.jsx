@@ -108,6 +108,18 @@ const NewSendStock = ({ showModal, setShowModal, fetchProducts }) => {
       setLoading(false);
       return;
     }
+
+    const insufficientStock = stockData.find(
+      (item) => item.quantity > item.existingquantity
+    );
+
+    if (insufficientStock) {
+      toast.error(
+        `Insufficient quantity for product "${insufficientStock.productName}"`
+      );
+      return;
+    }
+
     setLoading(true);
 
     const sentTo =
@@ -169,7 +181,7 @@ const NewSendStock = ({ showModal, setShowModal, fetchProducts }) => {
           setShowModal(false);
         }
       } else {
-        toast.error(response?.response?.data?.message);
+        // toast.error(response?.response?.data?.message);
       }
     } catch (error) {
       console.error("Error updating stock:", error);

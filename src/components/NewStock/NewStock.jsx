@@ -154,14 +154,15 @@ export default function NewStock() {
       );
       return;
     }
-    if (parseFloat(enteredQuantity) > row.inventoryProductQuantity) {
-      notifyError(`Insufficient quantity for product`);
-      return;
-    }
+    // if (parseFloat(enteredQuantity) > row.inventoryProductQuantity) {
+    //   notifyError(`Insufficient quantity for product`);
+    //   return;s
+    // }
 
     const stockData = {
       role: categoryName,
       quantity: parseFloat(enteredQuantity),
+      existingquantity: parseFloat(row.inventoryProductQuantity),
       productId: row._id,
       productName: row.inventoryProductName,
       unit: row.inventoryProductUnit.inventoryUnitName,
