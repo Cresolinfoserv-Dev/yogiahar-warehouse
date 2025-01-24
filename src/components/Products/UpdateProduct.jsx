@@ -107,12 +107,15 @@ export default function UpdateProduct() {
 
   const handleUpdateProduct = async (data) => {
     setLoading(true);
-
+    const trimmedData = {
+      ...data,
+      inventoryProductName: data.inventoryProductName.trim(),
+    };
     try {
       const formData = new FormData();
 
-      Object.keys(data).forEach((key) => {
-        if (data[key] === "" || data[key] == null) {
+      Object.keys(trimmedData).forEach((key) => {
+        if (trimmedData[key] === "" || trimmedData[key] == null) {
           if (
             key.includes("inventoryCostPrice") ||
             key.includes("inventorySellingPrice") ||
@@ -123,7 +126,7 @@ export default function UpdateProduct() {
             formData.append(key, "");
           }
         } else {
-          formData.append(key, data[key]);
+          formData.append(key, trimmedData[key]);
         }
       });
 

@@ -76,10 +76,10 @@ export default function AddProducts() {
 
   const onSubmit = async (data) => {
     setLoading(true);
-
+    const trimmedProductName = data.inventoryProductName.trim();
     const formData = new FormData();
     formData.append("InventoryProductFile", data.InventoryProductFile[0]);
-    formData.append("inventoryProductName", data.inventoryProductName);
+    formData.append("inventoryProductName", trimmedProductName);
     formData.append(
       "inventoryProductDescription",
       data.inventoryProductDescription
