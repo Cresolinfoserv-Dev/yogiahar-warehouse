@@ -162,76 +162,85 @@ export default function GetProducts() {
     if (orderData && orderData.inventoryBarCode) {
       const printWindow = window.open("", "PRINT", "height=800,width=800");
       printWindow.document.write(`
-        <html>
-          <head>
-            <style>
-             @media print {
-             @page {
-              size: auto;
-               margin: 0;
-              }
-    body {
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-start;
-      width: ${labelsPerRow * 37}mm;
-      height: auto;
-    }
-    .print-container {
-      width: 35mm;
-      text-align: center;
-      height: 22mm;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin-left: 1.7mm;
-  
-      overflow: hidden;
-      page-break-inside: avoid;
-    }
-    img {
-      width: 18mm;
-      height: 9mm;
-      object-fit: fill;
-      margin: 0;
-      padding: 0;
-      display: block;
-      margin-bottom:1mm;
-    }
-    small {
-      font-size: 10px !important;
-      font-weight: bold !important;
-      line-height: 1em !important;
-      text-align: center; 
-      width: 30mm; 
-      display: block; 
-       
-    }
-      .print-container small:first-of-type {
-      margin-bottom: 2mm; 
-    }
+          <html>
+            <head>
+              <style>
+               @media print {
+      @page {
+         size: 107.5mm 22mm;
+        margin: 0;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        width: ${labelsPerRow * 37}mm;
+        height: auto;
+      }
+      .print-container {
+        width: 35mm;
+        text-align: center;
+        height: 22mm;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-left: 1.7mm;
+
+        overflow: hidden;
+        page-break-inside: avoid;
+      }
+      img {
+        width: 18mm;
+        height: 9mm;
+        object-fit: fill;
+        margin: 0;
+        padding: 0;
+        display: block;
+        margin-bottom:1mm;
+      }
+     small {
+    font-size: 9px !important;
+    font-weight: bold !important;
+    line-height: 1em !important;
+    text-align: center;
+    width: 30mm;
+    display: block;
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-height: 16px;
   }
-  
-            </style>
-          </head>
-          <body>
-            ${Array.from({ length: copies })
-              .map(
-                () => `
-                  <div class="print-container">
-                    <small>Oneness Shop</small>
-                     <small>${orderData?.inventoryProductName}</small>
-                    <img src="${orderData?.inventoryBarCode}" alt="barcode" />
-                     <small>₹ ${price}</small>
-                  </div>
-                `
-              )
-              .join("")}
-          </body>
-        </html>
+  small:first-child {
+    margin-bottom: 1mm;
+  }
+
+  small:nth-child(2) {
+    margin-bottom: 1mm;
+  }
+
+    }
+
+              </style>
+            </head>
+            <body>
+              ${Array.from({ length: copies })
+                .map(
+                  () => `
+                    <div class="print-container">
+                      <small>Oneness Shop</small>
+                       <small>${orderData?.inventoryProductName}</small>
+                      <img src="${orderData?.inventoryBarCode}" alt="barcode" />
+                       <small>₹ ${price}</small>
+                    </div>
+                  `
+                )
+                .join("")}
+            </body>
+          </html>
         `);
       printWindow.document.close();
       printWindow.focus();
